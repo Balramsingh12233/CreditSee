@@ -16,6 +16,8 @@ class LoanCalculatorView extends StatefulWidget {
 class _LoanCalculatorViewState extends State<LoanCalculatorView> {
   final LoanController _loanController = Get.find<LoanController>();
 
+  String? _selectedPurpose;
+
   final List<String> _loanPurposes = [
     'Personal Expense',
     'Medical Emergency',
@@ -31,6 +33,14 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
     symbol: '₹ ',
     decimalDigits: 0,
   );
+
+  @override
+  void initState() {
+    super.initState();
+    // Default matching Figma values
+    _loanController.principalAmount.value = 30000.0;
+    _loanController.tenureDays.value = 40;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +61,7 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title & Subtitle (Screen 11)
+            // Title & Subtitle (1:1 Figma Matching)
             Text(
               'Apply for loan',
               style: GoogleFonts.outfit(
@@ -71,7 +81,7 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
             ),
             const SizedBox(height: 16),
 
-            // Two Badge Chips: Interest Per Day 1% | Processing Fee 10%
+            // Two Dashed Border Chips: Interest Per Day 1% | Processing Fee 10% (Figma UI)
             Row(
               children: [
                 Expanded(
@@ -85,7 +95,7 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
             ),
             const SizedBox(height: 20),
 
-            // Purpose of Loan Dropdown
+            // Purpose of Loan Dropdown with hint 'Select purpose of loan'
             Text(
               'Purpose of Loan*',
               style: GoogleFonts.inter(
@@ -95,20 +105,20 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
               ),
             ),
             const SizedBox(height: 8),
-            Obx(
-              () => DropdownButtonFormField<String>(
-                initialValue: _loanController.purpose.value,
-                icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textMedium),
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                ),
-                items: _loanPurposes
-                    .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
-                onChanged: (val) {
-                  if (val != null) _loanController.updatePurpose(val);
-                },
+            DropdownButtonFormField<String>(
+              initialValue: _selectedPurpose,
+              icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textMedium),
+              decoration: const InputDecoration(
+                hintText: 'Select purpose of loan',
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
+              items: _loanPurposes
+                  .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                  .toList(),
+              onChanged: (val) {
+                setState(() => _selectedPurpose = val);
+                if (val != null) _loanController.updatePurpose(val);
+              },
             ),
             const SizedBox(height: 24),
 
@@ -146,17 +156,18 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
             ),
             const SizedBox(height: 4),
 
-            // Principal Amount Slider
+            // Principal Amount Slider (5,000 to 2,00,000)
             Obx(
               () => SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: AppColors.buttonBlue,
-                  inactiveTrackColor: AppColors.borderGrey,
+                  inactiveTrackColor: const Color(0xFFE2E8F0),
                   thumbColor: AppColors.buttonBlue,
                   trackHeight: 6,
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9),
                 ),
                 child: Slider(
-                  value: _loanController.principalAmount.value,
+                  value: _loanController.principalAmount.value.clamp(5000, 200000),
                   min: 5000,
                   max: 200000,
                   divisions: 39,
@@ -202,20 +213,21 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
             ),
             const SizedBox(height: 4),
 
-            // Tenure Slider with min/max labels below
+            // Tenure Slider: 20 Days to 45 Days (Strictly matching Figma left screenshot)
             Obx(
               () => SliderTheme(
                 data: SliderTheme.of(context).copyWith(
                   activeTrackColor: AppColors.buttonBlue,
-                  inactiveTrackColor: AppColors.borderGrey,
+                  inactiveTrackColor: const Color(0xFFE2E8F0),
                   thumbColor: AppColors.buttonBlue,
                   trackHeight: 6,
+                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9),
                 ),
                 child: Slider(
-                  value: _loanController.tenureDays.value.toDouble(),
+                  value: _loanController.tenureDays.value.toDouble().clamp(20.0, 45.0),
                   min: 20,
-                  max: 90,
-                  divisions: 14,
+                  max: 45,
+                  divisions: 25,
                   onChanged: (val) {
                     _loanController.updateTenure(val.toInt());
                   },
@@ -227,22 +239,28 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('20 Days', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textLight)),
-                  Text('90 Days', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textLight)),
+                  Text(
+                    '20 Days',
+                    style: GoogleFonts.inter(fontSize: 11, color: AppColors.textLight),
+                  ),
+                  Text(
+                    '45 Days',
+                    style: GoogleFonts.inter(fontSize: 11, color: AppColors.textLight),
+                  ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
-            // Breakdown Card (Light Blue Container with border)
+            // Breakdown Card (Matching Figma: Light blue card, blue values on right, 3 rows)
             Obx(
               () => Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.calcCardBg,
+                  color: const Color(0xFFF0F7FF),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.calcCardBorder, width: 1.2),
+                  border: Border.all(color: const Color(0xFF3B82F6), width: 1.2),
                 ),
                 child: Column(
                   children: [
@@ -250,20 +268,12 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
                       'Principle Amount',
                       currencyFormatter.format(_loanController.principalAmount.value),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     _buildSummaryRow(
                       'Interest',
                       '1%',
                     ),
-                    const SizedBox(height: 10),
-                    _buildSummaryRow(
-                      'Processing Fee (10%)',
-                      currencyFormatter.format(_loanController.processingFee),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Divider(color: AppColors.calcCardBorder),
-                    ),
+                    const SizedBox(height: 12),
                     _buildSummaryRow(
                       'Total Payable',
                       currencyFormatter.format(_loanController.totalPayable),
@@ -273,23 +283,24 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
                 ),
               ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
-            // Thank you note
+            // Cyan/Teal Note (Strictly matching Figma left screenshot)
             Center(
               child: Text(
                 'Thank you for choosing CreditSea. Please accept to proceed with the loan details.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontSize: 11.5,
-                  color: AppColors.textGrey,
+                  color: const Color(0xFF0284C7),
+                  fontWeight: FontWeight.w600,
                   height: 1.4,
                 ),
               ),
             ),
             const SizedBox(height: 24),
 
-            // Apply Button
+            // Apply Button (Solid Blue)
             Obx(
               () => ElevatedButton(
                 onPressed: _loanController.isLoading.value
@@ -318,11 +329,15 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
             ),
             const SizedBox(height: 12),
 
-            // Cancel Button
+            // Cancel Button (Outlined White with Blue border)
             OutlinedButton(
               onPressed: () => Get.back(),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
+                side: const BorderSide(color: AppColors.buttonBlue, width: 1.4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               child: Text(
                 'Cancel',
@@ -340,25 +355,27 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
     );
   }
 
+  // Dashed border chip matching Figma
   Widget _buildDashedBadge(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0F7FF),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: const Color(0xFF93C5FD),
-          width: 1.2,
-          style: BorderStyle.solid,
-        ),
+    return CustomPaint(
+      painter: _DashedBorderPainter(
+        color: const Color(0xFF60A5FA),
+        radius: 8.0,
       ),
-      child: Center(
-        child: Text(
-          text,
-          style: GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: const Color(0xFF1E40AF),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: GoogleFonts.inter(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF1E40AF),
+            ),
           ),
         ),
       ),
@@ -372,20 +389,64 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
         Text(
           label,
           style: GoogleFonts.inter(
-            fontSize: isBold ? 14.5 : 13.5,
+            fontSize: 14,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-            color: isBold ? AppColors.textDark : AppColors.textMedium,
+            color: isBold ? AppColors.textDark : const Color(0xFF334155),
           ),
         ),
         Text(
           value,
           style: GoogleFonts.outfit(
-            fontSize: isBold ? 16 : 14,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: isBold ? AppColors.buttonBlue : AppColors.textDark,
+            fontSize: isBold ? 16 : 14.5,
+            fontWeight: FontWeight.bold,
+            color: AppColors.buttonBlue, // Always bold blue in Figma!
           ),
         ),
       ],
     );
   }
+}
+
+// Custom Painter for authentic dashed borders (matching Figma chips)
+class _DashedBorderPainter extends CustomPainter {
+  final Color color;
+  final double radius;
+
+  _DashedBorderPainter({
+    required this.color,
+    this.radius = 8.0,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const strokeWidth = 1.2;
+    const dashWidth = 5.0;
+    const dashSpace = 3.5;
+
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    final rrect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Radius.circular(radius),
+    );
+
+    final path = Path()..addRRect(rrect);
+    final metrics = path.computeMetrics();
+
+    for (final metric in metrics) {
+      double distance = 0.0;
+      while (distance < metric.length) {
+        final len = (distance + dashWidth < metric.length) ? dashWidth : metric.length - distance;
+        final extract = metric.extractPath(distance, distance + len);
+        canvas.drawPath(extract, paint);
+        distance += dashWidth + dashSpace;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

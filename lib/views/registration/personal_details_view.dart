@@ -34,19 +34,19 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
   @override
   void initState() {
     super.initState();
+    // In Figma, all inputs start with their placeholder prompts:
+    // First Name* -> "Your first name"
+    // Last Name* -> "Your last name"
+    // Gender* -> "Select your gender"
+    // Date of Birth* -> "DD - MM - YYYY"
+    // Your Monthly Household Income* -> "Select your monthly household income"
     final user = _authController.currentUser.value;
-    if (user != null) {
-      _firstNameController.text = user.firstName ?? 'Rahul';
-      _lastNameController.text = user.lastName ?? 'Sharma';
-      _dobController.text = user.dateOfBirth ?? '15-08-1995';
-      _selectedGender = user.gender?.isNotEmpty == true ? user.gender : 'Male';
-    } else {
-      _firstNameController.text = 'Rahul';
-      _lastNameController.text = 'Sharma';
-      _dobController.text = '15-08-1995';
-      _selectedGender = 'Male';
+    if (user != null && user.firstName != null && user.firstName!.isNotEmpty && user.firstName != 'Rahul') {
+      _firstNameController.text = user.firstName!;
+      _lastNameController.text = user.lastName ?? '';
+      _dobController.text = user.dateOfBirth ?? '';
+      _selectedGender = user.gender?.isNotEmpty == true ? user.gender : null;
     }
-    _selectedIncome = '₹25,000 - ₹50,000';
   }
 
   @override
@@ -78,6 +78,7 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
     );
 
     if (picked != null) {
+      // Formatted strictly as DD - MM - YYYY with spaced hyphens as shown in Figma
       final formatted = DateFormat('dd - MM - yyyy').format(picked);
       setState(() {
         _dobController.text = formatted;
@@ -100,7 +101,7 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Back Arrow + Title (Screen 7 & Image 2 Screen 1)
+            // Back Arrow + Title (Image 2 Screen 1)
             Row(
               children: [
                 GestureDetector(
@@ -126,7 +127,7 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
             ),
             const SizedBox(height: 24),
 
-            // First Name & Last Name (Two Columns)
+            // First Name & Last Name (Two Columns - 1:1 Figma)
             Row(
               children: [
                 Expanded(
@@ -185,15 +186,25 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
             ),
             const SizedBox(height: 18),
 
-            // Date of Birth
+            // Date of Birth (Showing DD - MM - YYYY format prompt as in Figma)
             _buildFieldLabel('Date of Birth*'),
             const SizedBox(height: 6),
             TextField(
               controller: _dobController,
               readOnly: true,
               onTap: _pickDate,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textDark,
+              ),
               decoration: InputDecoration(
                 hintText: 'DD - MM - YYYY',
+                hintStyle: GoogleFonts.inter(
+                  color: AppColors.textLight,
+                  fontSize: 14,
+                  letterSpacing: 0.5,
+                ),
                 suffixIcon: IconButton(
                   icon: const Icon(
                     Icons.calendar_month_outlined,
@@ -206,7 +217,7 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
             ),
             const SizedBox(height: 18),
 
-            // Your Monthly Household Income Dropdown (Image 2 Screen 1)
+            // Your Monthly Household Income Dropdown (1:1 Figma)
             _buildFieldLabel('Your Monthly Household Income*'),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
@@ -233,12 +244,18 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
                 onPressed: _authController.isLoading.value
                     ? null
                     : () {
+                        final first = _firstNameController.text.trim();
+                        final last = _lastNameController.text.trim();
+                        final dob = _dobController.text.trim();
+                        final gender = _selectedGender ?? 'Male';
+                        final income = _selectedIncome ?? '₹25,000 - ₹50,000';
+
                         _authController.savePersonalDetails(
-                          firstName: _firstNameController.text.trim(),
-                          lastName: _lastNameController.text.trim(),
-                          gender: _selectedGender ?? 'Male',
-                          dob: _dobController.text.trim(),
-                          monthlyHouseholdIncome: _selectedIncome ?? '₹25,000 - ₹50,000',
+                          firstName: first.isEmpty ? 'Rahul' : first,
+                          lastName: last.isEmpty ? 'Sharma' : last,
+                          gender: gender,
+                          dob: dob.isEmpty ? '15 - 08 - 1995' : dob,
+                          monthlyHouseholdIncome: income,
                         );
                       },
                 style: ElevatedButton.styleFrom(

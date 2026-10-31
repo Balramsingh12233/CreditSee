@@ -239,11 +239,25 @@ class _HomeDashboardViewState extends State<HomeDashboardView> {
             ),
             const SizedBox(height: 8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Step $step of 6', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textLight)),
-                Text(_loanController.statusMessage.value,
-                    style: GoogleFonts.inter(fontSize: 11, color: AppColors.buttonBlue, fontWeight: FontWeight.w600)),
+                Text(
+                  'Step $step of 6',
+                  style: GoogleFonts.inter(fontSize: 11, color: AppColors.textLight),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    _loanController.statusMessage.value,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: AppColors.buttonBlue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.end,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 16),
