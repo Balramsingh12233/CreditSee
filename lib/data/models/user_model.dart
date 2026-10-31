@@ -10,6 +10,8 @@ class UserModel {
   final String? pan;
   final num? monthlyIncome;
   final int creditScore;
+  final bool isEmailVerified;
+  final bool isPanVerified;
 
   UserModel({
     this.id,
@@ -23,6 +25,8 @@ class UserModel {
     this.pan,
     this.monthlyIncome,
     this.creditScore = 750,
+    this.isEmailVerified = false,
+    this.isPanVerified = false,
   });
 
   String get fullName {
@@ -47,6 +51,8 @@ class UserModel {
       creditScore: json['creditScore'] is int
           ? json['creditScore']
           : (int.tryParse(json['creditScore']?.toString() ?? '') ?? 750),
+      isEmailVerified: json['isEmailVerified'] == true,
+      isPanVerified: json['isPanVerified'] == true,
     );
   }
 
@@ -63,6 +69,8 @@ class UserModel {
       'pan': pan,
       'monthlyIncome': monthlyIncome,
       'creditScore': creditScore,
+      'isEmailVerified': isEmailVerified,
+      'isPanVerified': isPanVerified,
     };
   }
 
@@ -78,6 +86,8 @@ class UserModel {
     String? pan,
     num? monthlyIncome,
     int? creditScore,
+    bool? isEmailVerified,
+    bool? isPanVerified,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -91,6 +101,8 @@ class UserModel {
       pan: pan ?? this.pan,
       monthlyIncome: monthlyIncome ?? this.monthlyIncome,
       creditScore: creditScore ?? this.creditScore,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      isPanVerified: isPanVerified ?? this.isPanVerified,
     );
   }
 }

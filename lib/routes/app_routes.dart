@@ -4,7 +4,10 @@ import '../views/auth/onboarding_view.dart';
 import '../views/auth/otp_view.dart';
 import '../views/auth/create_password_view.dart';
 import '../views/auth/sign_in_view.dart';
+import '../views/registration/details_loading_view.dart';
 import '../views/registration/personal_details_view.dart';
+import '../views/registration/personal_email_view.dart';
+import '../views/registration/verify_pan_view.dart';
 import '../views/loan/loan_calculator_view.dart';
 import '../views/loan/loan_offer_view.dart';
 import '../views/loan/application_status_view.dart';
@@ -16,7 +19,10 @@ class AppRoutes {
   static const String otp = '/otp';
   static const String createPassword = '/create-password';
   static const String signIn = '/sign-in';
+  static const String detailsLoading = '/details-loading';
   static const String personalDetails = '/personal-details';
+  static const String personalEmail = '/personal-email';
+  static const String verifyPan = '/verify-pan';
   static const String loanCalculator = '/loan-calculator';
   static const String loanOffer = '/loan-offer';
   static const String applicationStatus = '/application-status';
@@ -49,8 +55,23 @@ class AppRoutes {
       transition: Transition.rightToLeft,
     ),
     GetPage(
+      name: detailsLoading,
+      page: () => const DetailsLoadingView(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
       name: personalDetails,
       page: () => const PersonalDetailsView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: personalEmail,
+      page: () => const PersonalEmailView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: verifyPan,
+      page: () => const VerifyPanView(),
       transition: Transition.rightToLeft,
     ),
     GetPage(

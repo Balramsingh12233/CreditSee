@@ -107,6 +107,76 @@ router.post('/verify-otp', async (req, res) => {
   }
 });
 
+// 2b. Send Email OTP (Figma Screen: Personal Email ID)
+router.post('/send-email-otp', async (req, res) => {
+  try {
+    const { email, phone } = req.body;
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, message: 'Valid email address required' });
+    }
+
+    const cleanPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
+    const mockEmailOtp = '123456'; // Standard 6-digit OTP for review testing
+
+    if (cleanPhone) {
+      await saveUser({
+        phone: cleanPhone,
+        email: email.toLowerCase(),
+        emailOtp: mockEmailOtp,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `OTP sent successfully to ${email}`,
+      data: {
+        email: email.toLowerCase(),
+        otp: mockEmailOtp,
+        expiresInSeconds: 60,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// 2c. Verify Email OTP
+router.post('/verify-email-otp', async (req, res) => {
+  try {
+    const { email, otp, phone } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'Email and OTP are required' });
+    }
+
+    const cleanPhone = phone ? phone.replace(/\D/g, '').slice(-10) : '';
+    const user = cleanPhone ? await getUser(cleanPhone) : null;
+
+    if (otp !== '123456' && (!user || user.emailOtp !== otp)) {
+      return res.status(400).json({ success: false, message: 'Invalid OTP. Please enter 123456' });
+    }
+
+    if (cleanPhone) {
+      await saveUser({
+        phone: cleanPhone,
+        email: email.toLowerCase(),
+        isEmailVerified: true,
+        emailOtp: null,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Email OTP verified successfully',
+      data: {
+        email: email.toLowerCase(),
+        isEmailVerified: true,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // 3. Set Password & Register
 router.post('/set-password', async (req, res) => {
   try {
