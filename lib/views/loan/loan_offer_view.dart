@@ -41,10 +41,10 @@ class LoanOfferView extends StatelessWidget {
 
               const Spacer(flex: 2),
 
-              // Golden Rupee Coin Graphic
+              // Rupee Coin Graphic — exact Figma SVG
               Center(
                 child: SvgPicture.asset(
-                  'assets/images/rupee_coin.svg',
+                  'assets/images/coin.svg',
                   width: 120,
                   height: 120,
                 ),

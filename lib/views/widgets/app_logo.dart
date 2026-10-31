@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -16,6 +17,17 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Splash screen (isVertical: true) renders the full logo.svg from Figma.
+    // Header bar (isVertical: false) renders icon + text side by side.
+    if (isVertical) {
+      return SvgPicture.asset(
+        'assets/images/logo.svg',
+        width: size * 1.8,
+        fit: BoxFit.contain,
+      );
+    }
+
+    // Horizontal variant: icon badge + "CreditSea" text
     final iconWidget = Container(
       width: size,
       height: size,
@@ -45,7 +57,7 @@ class AppLogo extends StatelessWidget {
         Text(
           'Credit',
           style: GoogleFonts.outfit(
-            fontSize: isVertical ? size * 0.55 : size * 0.42,
+            fontSize: size * 0.42,
             fontWeight: FontWeight.w700,
             color: textColor,
             letterSpacing: -0.5,
@@ -54,7 +66,7 @@ class AppLogo extends StatelessWidget {
         Text(
           'Sea',
           style: GoogleFonts.outfit(
-            fontSize: isVertical ? size * 0.55 : size * 0.42,
+            fontSize: size * 0.42,
             fontWeight: FontWeight.w400,
             color: textColor,
             letterSpacing: -0.5,
@@ -62,17 +74,6 @@ class AppLogo extends StatelessWidget {
         ),
       ],
     );
-
-    if (isVertical) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          iconWidget,
-          SizedBox(height: size * 0.25),
-          textWidget,
-        ],
-      );
-    }
 
     return Row(
       mainAxisSize: MainAxisSize.min,

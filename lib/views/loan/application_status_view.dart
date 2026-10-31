@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/loan_controller.dart';
@@ -60,10 +61,10 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(60),
         child: SafeArea(
-          child: const StepperHeader(currentStep: 3), // Step 3: Approval
+          child: StepperHeader(currentStep: 3), // Step 3: Approval
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -122,7 +123,7 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
             ),
             const SizedBox(height: 20),
 
-            // Vertical Step Cards (Screen 13)
+            // Vertical Step Cards - Centered buttons matching Figma request
             Obx(
               () => Column(
                 children: _steps.map((s) {
@@ -154,17 +155,17 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
                 child: Column(
                   children: [
                     Container(
-                      width: 52,
-                      height: 52,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
                         color: AppColors.calcCardBg,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.contact_support_outlined,
-                          size: 30,
-                          color: AppColors.buttonBlue,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'assets/icons/in_review.svg',
+                          width: 34,
+                          height: 34,
                         ),
                       ),
                     ),
@@ -196,31 +197,35 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Continue Button (Screen 13)
-            ElevatedButton(
-              onPressed: () {
-                Get.toNamed(AppRoutes.homeDashboard);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.buttonBlue,
-                minimumSize: const Size.fromHeight(50),
-              ),
-              child: Text(
-                'Continue',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+          ],
+        ),
+      ),
+      // Pinned Continue Button at screen bottom
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          child: ElevatedButton(
+            onPressed: () {
+              Get.toNamed(AppRoutes.homeDashboard);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.buttonBlue,
+              minimumSize: const Size.fromHeight(50),
+            ),
+            child: Text(
+              'Continue',
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 40),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  // Centered step button matching user requirement & Figma
   Widget _buildStepCard({
     required int stepNum,
     required String title,
@@ -236,13 +241,11 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
     Color bgColor = Colors.white;
 
     if (isDone) {
-      // Completed step (like Step 1 Application Submitted in Screen 13)
       borderColor = AppColors.successGreen;
       textColor = AppColors.successGreen;
       iconColor = AppColors.successGreen;
       bgColor = AppColors.successBg.withValues(alpha: 0.3);
     } else if (isCurrent) {
-      // Current active step (like Step 2 Application under Review in Screen 13)
       borderColor = AppColors.buttonBlue;
       textColor = AppColors.buttonBlue;
       iconColor = AppColors.buttonBlue;
@@ -258,21 +261,28 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
         border: Border.all(color: borderColor, width: isCurrent || isDone ? 1.5 : 1.0),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            isDone ? Icons.check_circle_outline_rounded : icon,
-            color: iconColor,
-            size: 22,
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Text(
-              title,
-              style: GoogleFonts.inter(
-                fontSize: 13.5,
-                fontWeight: isCurrent || isDone ? FontWeight.w600 : FontWeight.normal,
-                color: textColor,
-              ),
+          if (stepNum == 2 && isCurrent)
+            SvgPicture.asset(
+              'assets/icons/in_review.svg',
+              width: 20,
+              height: 20,
+            )
+          else
+            Icon(
+              isDone ? Icons.check_circle_outline_rounded : icon,
+              color: iconColor,
+              size: 20,
+            ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: isCurrent || isDone ? FontWeight.w600 : FontWeight.w500,
+              color: textColor,
             ),
           ),
         ],

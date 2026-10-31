@@ -196,134 +196,13 @@ class _VerifyPanViewState extends State<VerifyPanView> {
   }
 
   Widget _buildPanGraphic() {
-    return FutureBuilder<bool>(
-      future: rootBundle
-          .load('assets/images/pan_illustration.svg')
-          .then((_) => true)
-          .catchError((_) => false),
-      builder: (context, snapshot) {
-        if (snapshot.data == true) {
-          return SvgPicture.asset(
-            'assets/images/pan_illustration.svg',
-            width: 200,
-            height: 150,
-            fit: BoxFit.contain,
-          );
-        }
-        return _buildNativePanIllustration();
-      },
-    );
-  }
-
-  // Vector illustration matching the blue card on soft background in Image 2 Screen 3
-  Widget _buildNativePanIllustration() {
-    return Container(
+    // Use the exact Figma-exported SVG for the PAN card illustration
+    return SvgPicture.asset(
+      'assets/icons/pan.svg',
       width: 200,
       height: 150,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF1F6FD),
-        borderRadius: BorderRadius.circular(28),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            top: 20,
-            left: 20,
-            child: Container(
-              width: 140,
-              height: 100,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE2EDFC),
-                borderRadius: BorderRadius.circular(50),
-              ),
-            ),
-          ),
-          Container(
-            width: 155,
-            height: 98,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFF0066FF), Color(0xFF004DC9)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF0066FF).withValues(alpha: 0.35),
-                  blurRadius: 14,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 22,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFCD34D),
-                        borderRadius: BorderRadius.circular(3),
-                        border: Border.all(
-                          color: const Color(0xFFF59E0B),
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.contactless_rounded,
-                      size: 16,
-                      color: Colors.white.withValues(alpha: 0.8),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        Container(
-                          width: 32,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Container(
-                          width: 20,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      fit: BoxFit.contain,
     );
   }
 }
+

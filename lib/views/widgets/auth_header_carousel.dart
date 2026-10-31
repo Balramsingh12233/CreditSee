@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 import 'app_logo.dart';
@@ -142,7 +143,7 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
 
   Widget _buildSlideIcon(String type) {
     if (type == 'grid') {
-      // 4-box grid: Car, Bike, Laptop, Phone (Screen 2)
+      // Slide 1: Flexible Loan Options - 4-box grid with car, bike, laptop, phone
       return Container(
         width: 140,
         height: 130,
@@ -167,60 +168,20 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
         ),
       );
     } else if (type == 'approval') {
-      // Screen 3: Instant approval document with lightning
-      return Container(
-        width: 130,
-        height: 130,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Icon(
-              Icons.verified_rounded,
-              size: 80,
-              color: Colors.white.withValues(alpha: 0.15),
-            ),
-            const Icon(
-              Icons.bolt_rounded,
-              size: 56,
-              color: Colors.white,
-            ),
-          ],
-        ),
+      // Slide 2: Instant Loan Approval — use the uploaded Figma SVG
+      return SvgPicture.asset(
+        'assets/icons/instant_loan.svg',
+        width: 140,
+        height: 140,
+        fit: BoxFit.contain,
       );
     } else {
-      // Screen 4 & 5: 24x7 Customer support
-      return Container(
-        width: 130,
-        height: 130,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(
-              right: 18,
-              bottom: 18,
-              child: Icon(
-                Icons.star_rounded,
-                size: 32,
-                color: Colors.white.withValues(alpha: 0.25),
-              ),
-            ),
-            const Icon(
-              Icons.support_agent_rounded,
-              size: 64,
-              color: Colors.white,
-            ),
-          ],
-        ),
+      // Slide 3: 24x7 Customer Care — use the uploaded Figma SVG
+      return SvgPicture.asset(
+        'assets/icons/24_7_customer.svg',
+        width: 140,
+        height: 140,
+        fit: BoxFit.contain,
       );
     }
   }
