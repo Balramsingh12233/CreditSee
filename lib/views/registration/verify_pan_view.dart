@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/auth_controller.dart';
@@ -46,6 +47,13 @@ class _VerifyPanViewState extends State<VerifyPanView> {
     });
   }
 
+  void _onVerify() {
+    final pan = _panController.text.trim();
+    _authController.verifyPan(
+      pan.isEmpty ? 'ABCDE1234F' : pan,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,9 +95,9 @@ class _VerifyPanViewState extends State<VerifyPanView> {
             ),
             const SizedBox(height: 24),
 
-            // PAN Card Illustration (Pixel-perfect Figma illustration matching Image 2 Screen 3)
+            // PAN Card Illustration (Supports direct Figma SVG or fallback vector)
             Center(
-              child: _buildPanCardIllustration(),
+              child: _buildPanGraphic(),
             ),
             const SizedBox(height: 32),
 
@@ -149,50 +157,66 @@ class _VerifyPanViewState extends State<VerifyPanView> {
                 ),
               ],
             ),
-            const SizedBox(height: 40),
-
-            // Verify Button (Blue full-width CTA)
-            Obx(
-              () => ElevatedButton(
-                onPressed: _authController.isPanVerifying.value
-                    ? null
-                    : () {
-                        final pan = _panController.text.trim();
-                        _authController.verifyPan(
-                          pan.isEmpty ? 'ABCDE1234F' : pan,
-                        );
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonBlue,
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: _authController.isPanVerifying.value
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.2,
-                        ),
-                      )
-                    : Text(
-                        'Verify',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
-            ),
             const SizedBox(height: 24),
           ],
+        ),
+      ),
+      // Pinned Button at the bottom of the screen (1:1 Figma placement)
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          child: Obx(
+            () => ElevatedButton(
+              onPressed: _authController.isPanVerifying.value ? null : _onVerify,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonBlue,
+                minimumSize: const Size.fromHeight(50),
+              ),
+              child: _authController.isPanVerifying.value
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.2,
+                      ),
+                    )
+                  : Text(
+                      'Verify',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+            ),
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildPanGraphic() {
+    return FutureBuilder<bool>(
+      future: rootBundle
+          .load('assets/images/pan_illustration.svg')
+          .then((_) => true)
+          .catchError((_) => false),
+      builder: (context, snapshot) {
+        if (snapshot.data == true) {
+          return SvgPicture.asset(
+            'assets/images/pan_illustration.svg',
+            width: 200,
+            height: 150,
+            fit: BoxFit.contain,
+          );
+        }
+        return _buildNativePanIllustration();
+      },
+    );
+  }
+
   // Vector illustration matching the blue card on soft background in Image 2 Screen 3
-  Widget _buildPanCardIllustration() {
+  Widget _buildNativePanIllustration() {
     return Container(
       width: 200,
       height: 150,
@@ -203,7 +227,6 @@ class _VerifyPanViewState extends State<VerifyPanView> {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Soft cloud backdrop shape
           Positioned(
             top: 20,
             left: 20,
@@ -216,7 +239,6 @@ class _VerifyPanViewState extends State<VerifyPanView> {
               ),
             ),
           ),
-          // Floating Credit / PAN Card in Royal Blue
           Container(
             width: 155,
             height: 98,
@@ -240,11 +262,9 @@ class _VerifyPanViewState extends State<VerifyPanView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Top Row: Metallic EMV Chip + Logo indicator
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Metallic Chip
                     Container(
                       width: 22,
                       height: 16,
@@ -257,7 +277,6 @@ class _VerifyPanViewState extends State<VerifyPanView> {
                         ),
                       ),
                     ),
-                    // Contactless emblem
                     Icon(
                       Icons.contactless_rounded,
                       size: 16,
@@ -265,8 +284,6 @@ class _VerifyPanViewState extends State<VerifyPanView> {
                     ),
                   ],
                 ),
-
-                // Card Number Stripes placeholder
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -310,4 +327,3 @@ class _VerifyPanViewState extends State<VerifyPanView> {
     );
   }
 }
-

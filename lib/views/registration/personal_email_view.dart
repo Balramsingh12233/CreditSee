@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/auth_controller.dart';
@@ -58,6 +59,13 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
     setState(() {});
   }
 
+  void _onVerify() {
+    final otp = _getEnteredOtp();
+    _authController.verifyEmailOtp(
+      otp.isEmpty ? '123456' : otp,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,9 +107,9 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
             ),
             const SizedBox(height: 20),
 
-            // Laptop & Email Illustration (Pixel-perfect Figma illustration matching Image 2 Screen 2)
+            // Laptop & Email Illustration (Supports direct Figma SVG or fallback vector)
             Center(
-              child: _buildLaptopEmailIllustration(),
+              child: _buildEmailGraphic(),
             ),
             const SizedBox(height: 24),
 
@@ -269,50 +277,66 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
                 ],
               ),
             ),
-            const SizedBox(height: 36),
-
-            // Verify Button (Blue full-width CTA)
-            Obx(
-              () => ElevatedButton(
-                onPressed: _authController.isLoading.value
-                    ? null
-                    : () {
-                        final otp = _getEnteredOtp();
-                        _authController.verifyEmailOtp(
-                          otp.isEmpty ? '123456' : otp,
-                        );
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonBlue,
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: _authController.isLoading.value
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.2,
-                        ),
-                      )
-                    : Text(
-                        'Verify',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
-            ),
             const SizedBox(height: 24),
           ],
+        ),
+      ),
+      // Pinned Button at the bottom of the screen (1:1 Figma placement)
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          child: Obx(
+            () => ElevatedButton(
+              onPressed: _authController.isLoading.value ? null : _onVerify,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonBlue,
+                minimumSize: const Size.fromHeight(50),
+              ),
+              child: _authController.isLoading.value
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.2,
+                      ),
+                    )
+                  : Text(
+                      'Verify',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  // Vector illustration of laptop with rising envelope & @ badge
-  Widget _buildLaptopEmailIllustration() {
+  Widget _buildEmailGraphic() {
+    return FutureBuilder<bool>(
+      future: rootBundle
+          .load('assets/images/email_illustration.svg')
+          .then((_) => true)
+          .catchError((_) => false),
+      builder: (context, snapshot) {
+        if (snapshot.data == true) {
+          return SvgPicture.asset(
+            'assets/images/email_illustration.svg',
+            width: 190,
+            height: 150,
+            fit: BoxFit.contain,
+          );
+        }
+        return _buildNativeIllustration();
+      },
+    );
+  }
+
+  // Vector illustration fallback of laptop with rising envelope & @ badge
+  Widget _buildNativeIllustration() {
     return Container(
       width: 190,
       height: 150,
@@ -382,12 +406,10 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Envelope Fold
                   CustomPaint(
                     size: const Size(78, 52),
                     painter: _EnvelopePainter(),
                   ),
-                  // White Circle with @ symbol
                   Container(
                     width: 24,
                     height: 24,
@@ -410,7 +432,6 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
               ),
             ),
           ),
-          // Tiny paper flight accent
           Positioned(
             top: 18,
             right: 22,
@@ -420,7 +441,6 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
               size: 18,
             ),
           ),
-          // Small Sparkle accent
           Positioned(
             top: 24,
             left: 28,
@@ -455,4 +475,3 @@ class _EnvelopePainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

@@ -21,31 +21,22 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
   final TextEditingController _dobController = TextEditingController();
 
   String? _selectedGender;
-  String? _selectedIncome;
+  String? _selectedMaritalStatus;
 
   final List<String> _genderOptions = ['Male', 'Female', 'Other'];
-  final List<String> _incomeOptions = [
-    '₹15,000 - ₹25,000',
-    '₹25,000 - ₹50,000',
-    '₹50,000 - ₹1,00,000',
-    '₹1,00,000+',
-  ];
+  final List<String> _maritalOptions = ['Single', 'Married', 'Divorced', 'Widowed'];
 
   @override
   void initState() {
     super.initState();
-    // In Figma, all inputs start with their placeholder prompts:
-    // First Name* -> "Your first name"
-    // Last Name* -> "Your last name"
-    // Gender* -> "Select your gender"
-    // Date of Birth* -> "DD - MM - YYYY"
-    // Your Monthly Household Income* -> "Select your monthly household income"
+    // Figma initial state: shows clean placeholders
     final user = _authController.currentUser.value;
     if (user != null && user.firstName != null && user.firstName!.isNotEmpty && user.firstName != 'Rahul') {
       _firstNameController.text = user.firstName!;
       _lastNameController.text = user.lastName ?? '';
       _dobController.text = user.dateOfBirth ?? '';
       _selectedGender = user.gender?.isNotEmpty == true ? user.gender : null;
+      _selectedMaritalStatus = user.maritalStatus?.isNotEmpty == true ? user.maritalStatus : null;
     }
   }
 
@@ -78,12 +69,27 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
     );
 
     if (picked != null) {
-      // Formatted strictly as DD - MM - YYYY with spaced hyphens as shown in Figma
       final formatted = DateFormat('dd - MM - yyyy').format(picked);
       setState(() {
         _dobController.text = formatted;
       });
     }
+  }
+
+  void _onContinue() {
+    final first = _firstNameController.text.trim();
+    final last = _lastNameController.text.trim();
+    final dob = _dobController.text.trim();
+    final gender = _selectedGender ?? 'Male';
+    final marital = _selectedMaritalStatus ?? 'Single';
+
+    _authController.savePersonalDetails(
+      firstName: first.isEmpty ? 'Rahul' : first,
+      lastName: last.isEmpty ? 'Sharma' : last,
+      gender: gender,
+      dob: dob.isEmpty ? '15 - 08 - 1995' : dob,
+      maritalStatus: marital,
+    );
   }
 
   @override
@@ -217,71 +223,58 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
             ),
             const SizedBox(height: 18),
 
-            // Your Monthly Household Income Dropdown (1:1 Figma)
-            _buildFieldLabel('Your Monthly Household Income*'),
+            // Your Marital Status Dropdown (Strictly matching Figma UI)
+            _buildFieldLabel('Your Marital Status *'),
             const SizedBox(height: 6),
             DropdownButtonFormField<String>(
-              initialValue: _selectedIncome,
+              initialValue: _selectedMaritalStatus,
               icon: const Icon(
                 Icons.keyboard_arrow_down_rounded,
                 color: AppColors.textMedium,
               ),
               decoration: const InputDecoration(
-                hintText: 'Select your monthly household income',
+                hintText: 'Select your marital status',
               ),
-              items: _incomeOptions
-                  .map((inc) => DropdownMenuItem(value: inc, child: Text(inc)))
+              items: _maritalOptions
+                  .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                   .toList(),
               onChanged: (val) {
-                setState(() => _selectedIncome = val);
+                setState(() => _selectedMaritalStatus = val);
               },
-            ),
-            const SizedBox(height: 36),
-
-            // Continue Button -> Navigates to Personal Email ID
-            Obx(
-              () => ElevatedButton(
-                onPressed: _authController.isLoading.value
-                    ? null
-                    : () {
-                        final first = _firstNameController.text.trim();
-                        final last = _lastNameController.text.trim();
-                        final dob = _dobController.text.trim();
-                        final gender = _selectedGender ?? 'Male';
-                        final income = _selectedIncome ?? '₹25,000 - ₹50,000';
-
-                        _authController.savePersonalDetails(
-                          firstName: first.isEmpty ? 'Rahul' : first,
-                          lastName: last.isEmpty ? 'Sharma' : last,
-                          gender: gender,
-                          dob: dob.isEmpty ? '15 - 08 - 1995' : dob,
-                          monthlyHouseholdIncome: income,
-                        );
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonBlue,
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: _authController.isLoading.value
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2.2,
-                        ),
-                      )
-                    : Text(
-                        'Continue',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
             ),
             const SizedBox(height: 24),
           ],
+        ),
+      ),
+      // Pinned Button at the bottom of the screen (1:1 Figma placement)
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          child: Obx(
+            () => ElevatedButton(
+              onPressed: _authController.isLoading.value ? null : _onContinue,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonBlue,
+                minimumSize: const Size.fromHeight(50),
+              ),
+              child: _authController.isLoading.value
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.2,
+                      ),
+                    )
+                  : Text(
+                      'Continue',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+            ),
+          ),
         ),
       ),
     );

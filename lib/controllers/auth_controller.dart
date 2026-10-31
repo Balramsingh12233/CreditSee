@@ -322,9 +322,9 @@ class AuthController extends GetxController {
     required String lastName,
     required String gender,
     required String dob,
-    required String monthlyHouseholdIncome,
+    required String maritalStatus,
   }) async {
-    if (firstName.isEmpty || lastName.isEmpty || gender.isEmpty || dob.isEmpty || monthlyHouseholdIncome.isEmpty) {
+    if (firstName.isEmpty || lastName.isEmpty || gender.isEmpty || dob.isEmpty || maritalStatus.isEmpty) {
       Get.snackbar(
         'Missing Information',
         'Please complete all required fields (*)',
@@ -340,6 +340,7 @@ class AuthController extends GetxController {
       lastName: lastName,
       gender: gender,
       dateOfBirth: dob,
+      maritalStatus: maritalStatus,
     );
 
     try {

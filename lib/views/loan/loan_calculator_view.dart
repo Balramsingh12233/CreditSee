@@ -298,58 +298,67 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-
-            // Apply Button (Solid Blue)
-            Obx(
-              () => ElevatedButton(
-                onPressed: _loanController.isLoading.value
-                    ? null
-                    : () {
-                        _loanController.proceedToOffer();
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonBlue,
-                  minimumSize: const Size.fromHeight(50),
-                ),
-                child: _loanController.isLoading.value
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                      )
-                    : Text(
-                        'Apply',
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Cancel Button (Outlined White with Blue border)
-            OutlinedButton(
-              onPressed: () => Get.back(),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(50),
-                side: const BorderSide(color: AppColors.buttonBlue, width: 1.4),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                'Cancel',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.buttonBlue,
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
           ],
+        ),
+      ),
+      // Pinned Action Buttons at the bottom (1:1 Figma placement)
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Apply Button (Solid Blue)
+              Obx(
+                () => ElevatedButton(
+                  onPressed: _loanController.isLoading.value
+                      ? null
+                      : () {
+                          _loanController.proceedToOffer();
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonBlue,
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                  child: _loanController.isLoading.value
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : Text(
+                          'Apply',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              // Cancel Button (Outlined White with Blue border)
+              OutlinedButton(
+                onPressed: () => Get.back(),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(48),
+                  side: const BorderSide(color: AppColors.buttonBlue, width: 1.4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.buttonBlue,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
