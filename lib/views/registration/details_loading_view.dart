@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../core/theme/app_colors.dart';
 import '../../routes/app_routes.dart';
+import '../widgets/stepper_header.dart';
 
 class DetailsLoadingView extends StatefulWidget {
   const DetailsLoadingView({super.key});
@@ -23,11 +25,9 @@ class _DetailsLoadingViewState extends State<DetailsLoadingView>
       duration: const Duration(milliseconds: 1300),
     )..repeat();
 
-    // Smooth transition to Personal Details after simulating profile fetch
-    _timer = Timer(const Duration(milliseconds: 1200), () {
-      if (mounted) {
-        Get.offNamed(AppRoutes.personalDetails);
-      }
+    // Navigate to Personal Details after shimmer
+    _timer = Timer(const Duration(milliseconds: 1400), () {
+      if (mounted) Get.offNamed(AppRoutes.personalDetails);
     });
   }
 
@@ -42,135 +42,94 @@ class _DetailsLoadingViewState extends State<DetailsLoadingView>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(60),
+        child: SafeArea(child: StepperHeader(currentStep: 1)),
+      ),
       body: SafeArea(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return ShaderMask(
-              blendMode: BlendMode.srcATop,
-              shaderCallback: (bounds) {
-                return LinearGradient(
-                  colors: const [
-                    Color(0xFFE2E8F0),
-                    Color(0xFFF8FAFC),
-                    Color(0xFFE2E8F0),
-                  ],
-                  stops: const [0.1, 0.5, 0.9],
-                  begin: const Alignment(-1.0, -0.2),
-                  end: const Alignment(1.0, 0.2),
-                  transform: _SlidingGradientTransform(slidePercent: _controller.value),
-                ).createShader(bounds);
-              },
-              child: SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Top Bar Placeholder (Exact match with Figma Image 1 Screen 3)
-                    _buildBox(
-                      width: double.infinity,
-                      height: 18,
-                      borderRadius: 6,
-                    ),
-                    const SizedBox(height: 24),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Top stepper-like bar ──────────────────────────────────
+                  _shimmerBox(width: double.infinity, height: 10, radius: 5),
+                  const SizedBox(height: 20),
 
-                    // Main White Card with Skeleton Elements (1:1 Figma wireframe)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Title skeleton
-                          _buildBox(
-                            width: 140,
-                            height: 22,
-                            borderRadius: 6,
-                          ),
-                          const SizedBox(height: 24),
+                  // ── Page title skeleton ───────────────────────────────────
+                  _shimmerBox(width: 160, height: 22, radius: 6),
+                  const SizedBox(height: 20),
 
-                          // First & Last Name Two-column skeleton
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  borderRadius: 10,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: _buildBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  borderRadius: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 18),
+                  // ── First Name + Last Name ────────────────────────────────
+                  Row(
+                    children: [
+                      Expanded(child: _shimmerBox(height: 48, radius: 10)),
+                      const SizedBox(width: 12),
+                      Expanded(child: _shimmerBox(height: 48, radius: 10)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
 
-                          // Gender Dropdown skeleton
-                          _buildBox(
-                            width: double.infinity,
-                            height: 48,
-                            borderRadius: 10,
-                          ),
-                          const SizedBox(height: 18),
+                  // ── Gender dropdown ───────────────────────────────────────
+                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                  const SizedBox(height: 16),
 
-                          // Date of Birth skeleton
-                          _buildBox(
-                            width: double.infinity,
-                            height: 48,
-                            borderRadius: 10,
-                          ),
-                          const SizedBox(height: 18),
+                  // ── Date of Birth ─────────────────────────────────────────
+                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                  const SizedBox(height: 16),
 
-                          // Marital Status skeleton
-                          _buildBox(
-                            width: double.infinity,
-                            height: 48,
-                            borderRadius: 10,
-                          ),
-                          const SizedBox(height: 36),
+                  // ── Marital status label skeleton ─────────────────────────
+                  _shimmerBox(width: 140, height: 14, radius: 5),
+                  const SizedBox(height: 8),
 
-                          // Continue Button skeleton
-                          _buildBox(
-                            width: double.infinity,
-                            height: 50,
-                            borderRadius: 10,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+                  // ── Marital status field ──────────────────────────────────
+                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                  const SizedBox(height: 16),
+
+                  // ── Extra field ───────────────────────────────────────────
+                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                  const Spacer(),
+
+                  // ── Continue button skeleton ──────────────────────────────
+                  _shimmerBox(width: double.infinity, height: 50, radius: 10),
+                  const SizedBox(height: 8),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildBox({
-    required double width,
+  Widget _shimmerBox({
+    double? width,
     required double height,
-    double borderRadius = 8,
+    double radius = 8,
   }) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: const Color(0xFFE2E8F0),
-        borderRadius: BorderRadius.circular(borderRadius),
+    return ShaderMask(
+      blendMode: BlendMode.srcATop,
+      shaderCallback: (bounds) => LinearGradient(
+        colors: const [
+          Color(0xFFE2E8F0),
+          Color(0xFFF8FAFC),
+          Color(0xFFE2E8F0),
+        ],
+        stops: const [0.1, 0.5, 0.9],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        transform: _SlidingGradientTransform(slidePercent: _controller.value),
+      ).createShader(bounds),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: AppColors.borderGrey,
+          borderRadius: BorderRadius.circular(radius),
+        ),
       ),
     );
   }

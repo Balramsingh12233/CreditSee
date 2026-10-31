@@ -206,7 +206,7 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
           child: ElevatedButton(
             onPressed: () {
-              Get.toNamed(AppRoutes.homeDashboard);
+              Get.offAllNamed(AppRoutes.homeDashboard);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.buttonBlue,

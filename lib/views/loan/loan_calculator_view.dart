@@ -37,9 +37,11 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
   @override
   void initState() {
     super.initState();
-    // Default matching Figma values
-    _loanController.principalAmount.value = 30000.0;
-    _loanController.tenureDays.value = 40;
+    // Use postFrameCallback to avoid setState-during-build with Obx
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loanController.principalAmount.value = 30000.0;
+      _loanController.tenureDays.value = 40;
+    });
   }
 
   @override

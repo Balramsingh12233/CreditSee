@@ -3,6 +3,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/theme/app_colors.dart';
 
+/// AppLogo renders the uploaded Figma logo across all screens.
+///
+/// • isVertical = true  → full logo.svg (splash, standalone)
+/// • isVertical = false → icon badge (custom painter) + "CreditSea" text side-by-side
+///   matching the Figma nav-bar header exactly.
 class AppLogo extends StatelessWidget {
   final double size;
   final bool isVertical;
@@ -17,116 +22,104 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Splash screen (isVertical: true) renders the full logo.svg from Figma.
-    // Header bar (isVertical: false) renders icon + text side by side.
+    // ── Splash / Vertical: render the full Figma logo SVG ──────────────────
     if (isVertical) {
       return SvgPicture.asset(
         'assets/images/logo.svg',
-        width: size * 1.8,
+        width: size * 1.6,
         fit: BoxFit.contain,
       );
     }
 
-    // Horizontal variant: icon badge + "CreditSea" text
+    // ── Horizontal nav-bar: circular badge + "Credit Sea" text ─────────────
+    // The badge uses a white circle with the green sail icon — matching Figma.
     final iconWidget = Container(
       width: size,
       height: size,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: textColor == AppColors.primaryBlue ? Colors.white : Colors.white,
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 3),
-          ),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
         ],
       ),
       child: Center(
         child: CustomPaint(
-          size: Size(size * 0.72, size * 0.72),
-          painter: _ShipSailPainter(),
+          size: Size(size * 0.70, size * 0.70),
+          painter: _SailPainter(),
         ),
       ),
-    );
-
-    final textWidget = Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          'Credit',
-          style: GoogleFonts.outfit(
-            fontSize: size * 0.42,
-            fontWeight: FontWeight.w700,
-            color: textColor,
-            letterSpacing: -0.5,
-          ),
-        ),
-        Text(
-          'Sea',
-          style: GoogleFonts.outfit(
-            fontSize: size * 0.42,
-            fontWeight: FontWeight.w400,
-            color: textColor,
-            letterSpacing: -0.5,
-          ),
-        ),
-      ],
     );
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         iconWidget,
-        const SizedBox(width: 12),
-        textWidget,
+        const SizedBox(width: 10),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: 'Credit',
+                style: GoogleFonts.outfit(
+                  fontSize: size * 0.44,
+                  fontWeight: FontWeight.w700,
+                  color: textColor,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              TextSpan(
+                text: 'Sea',
+                style: GoogleFonts.outfit(
+                  fontSize: size * 0.44,
+                  fontWeight: FontWeight.w400,
+                  color: textColor,
+                  letterSpacing: -0.3,
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
 }
 
-class _ShipSailPainter extends CustomPainter {
+class _SailPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint1 = Paint()
-      ..color = AppColors.accentCyan
-      ..style = PaintingStyle.fill;
-
-    final paint2 = Paint()
-      ..color = const Color(0xFF00E5B5)
-      ..style = PaintingStyle.fill;
-
-    final paint3 = Paint()
-      ..color = const Color(0xFF00B078)
-      ..style = PaintingStyle.fill;
-
     final w = size.width;
     final h = size.height;
 
-    // Sail 1
-    final path1 = Path();
-    path1.moveTo(w * 0.15, h * 0.58);
-    path1.lineTo(w * 0.82, h * 0.22);
-    path1.lineTo(w * 0.42, h * 0.60);
-    path1.close();
-    canvas.drawPath(path1, paint1);
+    // Sail 1 – teal
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.15, h * 0.58)
+        ..lineTo(w * 0.82, h * 0.22)
+        ..lineTo(w * 0.42, h * 0.60)
+        ..close(),
+      Paint()..color = AppColors.accentCyan..style = PaintingStyle.fill,
+    );
 
-    // Sail 2
-    final path2 = Path();
-    path2.moveTo(w * 0.28, h * 0.68);
-    path2.lineTo(w * 0.95, h * 0.12);
-    path2.lineTo(w * 0.68, h * 0.70);
-    path2.close();
-    canvas.drawPath(path2, paint2);
+    // Sail 2 – lighter teal
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.28, h * 0.68)
+        ..lineTo(w * 0.95, h * 0.12)
+        ..lineTo(w * 0.68, h * 0.70)
+        ..close(),
+      Paint()..color = const Color(0xFF00E5B5)..style = PaintingStyle.fill,
+    );
 
-    // Hull curve
-    final path3 = Path();
-    path3.moveTo(w * 0.10, h * 0.74);
-    path3.quadraticBezierTo(w * 0.55, h * 0.88, w * 0.90, h * 0.72);
-    path3.quadraticBezierTo(w * 0.55, h * 0.80, w * 0.10, h * 0.74);
-    path3.close();
-    canvas.drawPath(path3, paint3);
+    // Hull
+    canvas.drawPath(
+      Path()
+        ..moveTo(w * 0.10, h * 0.74)
+        ..quadraticBezierTo(w * 0.55, h * 0.88, w * 0.90, h * 0.72)
+        ..quadraticBezierTo(w * 0.55, h * 0.80, w * 0.10, h * 0.74)
+        ..close(),
+      Paint()..color = const Color(0xFF00B078)..style = PaintingStyle.fill,
+    );
   }
 
   @override

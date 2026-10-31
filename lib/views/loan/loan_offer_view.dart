@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/loan_controller.dart';
@@ -41,12 +40,13 @@ class LoanOfferView extends StatelessWidget {
 
               const Spacer(flex: 2),
 
-              // Rupee Coin Graphic — exact Figma SVG
+              // Rupee Coin Graphic — extracted from Figma
               Center(
-                child: SvgPicture.asset(
-                  'assets/images/coin.svg',
-                  width: 120,
-                  height: 120,
+                child: Image.asset(
+                  'assets/images/coin.png',
+                  width: 140,
+                  height: 140,
+                  fit: BoxFit.contain,
                 ),
               ),
 

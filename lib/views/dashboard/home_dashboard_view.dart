@@ -34,6 +34,7 @@ class _HomeDashboardViewState extends State<HomeDashboardView> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0.5,
+        automaticallyImplyLeading: false,
         title: const AppLogo(size: 30, textColor: AppColors.primaryBlue),
         centerTitle: false,
         actions: [
