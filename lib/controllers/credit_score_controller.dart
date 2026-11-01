@@ -80,89 +80,88 @@ class CreditScoreController extends GetxController {
   // ─── MAIN CALCULATION ENGINE ─────────────────────────────────────────────────
 
   /// Recalculates the full CIBIL-like score from all 5 factors.
+  /// Standard CIBIL: Base 300 + max 600 points = 300 to 900 range.
   void _recalculate() {
     final totalPayments = _onTimeCount.value + _missedCount.value;
 
-    // ── Factor 1: Payment History (35% weight → max 315 points) ──────────────
+    // ── Factor 1: Payment History (35% weight → max 210 points) ──────────────
     double f1 = 0;
     if (totalPayments > 0) {
       final ratio = _onTimeCount.value / totalPayments;
-      f1 = ratio * 315; // 100% on-time = full 315 points
-      if (_missedCount.value >= 3) f1 *= 0.6; // penalty for 3+ missed
+      f1 = ratio * 210;
+      if (_missedCount.value >= 3) f1 *= 0.6;
     } else {
-      f1 = 200; // New user base
+      f1 = 150; // New user base
     }
-    paymentHistoryScore.value = ((f1 / 315) * 100).round().clamp(0, 100);
+    paymentHistoryScore.value = ((f1 / 210) * 100).round().clamp(0, 100);
 
-    // ── Factor 2: Credit Utilization (30% weight → max 270 points) ───────────
+    // ── Factor 2: Credit Utilization (30% weight → max 180 points) ───────────
     double f2 = 0;
     if (_totalLoanAmount.value > 0) {
       final utilizationRatio = _usedAmount.value / _totalLoanAmount.value;
       // < 30% utilization is ideal
       if (utilizationRatio <= 0.30) {
-        f2 = 270;
+        f2 = 180;
       } else if (utilizationRatio <= 0.50) {
-        f2 = 216; // 80% of max
+        f2 = 144;
       } else if (utilizationRatio <= 0.75) {
-        f2 = 162; // 60% of max
+        f2 = 108;
       } else {
-        f2 = 81; // 30% of max — very high utilization
+        f2 = 54;
       }
       creditUtilization.value =
           '${(utilizationRatio * 100).round().clamp(0, 100)}%';
     } else {
-      f2 = 162; // No loan history → mid score
-      creditUtilization.value = '0%';
+      f2 = 126;
+      creditUtilization.value = '25%';
     }
-    utilizationScore.value = ((f2 / 270) * 100).round().clamp(0, 100);
+    utilizationScore.value = ((f2 / 180) * 100).round().clamp(0, 100);
 
-    // ── Factor 3: Credit Age / Account Tenure (15% → max 135 points) ─────────
+    // ── Factor 3: Credit Age / Account Tenure (15% → max 90 points) ──────────
     double f3 = 0;
     final ageMonths = _accountAgeMonths.value;
     if (ageMonths >= 60) {
-      f3 = 135; // 5+ years = max
+      f3 = 90;
     } else if (ageMonths >= 36) {
-      f3 = 108; // 3-5 years
+      f3 = 75;
     } else if (ageMonths >= 24) {
-      f3 = 94; // 2-3 years
+      f3 = 60;
     } else if (ageMonths >= 12) {
-      f3 = 81; // 1-2 years
+      f3 = 48;
     } else if (ageMonths >= 6) {
-      f3 = 54; // 6-12 months
+      f3 = 36;
     } else {
-      f3 = 27; // < 6 months — new account
+      f3 = 24;
     }
-    // Bonus: PAN + Email verified adds credibility
-    if (_hasVerifiedPan.value) f3 = (f3 * 1.1).clamp(0, 135);
-    if (_hasVerifiedEmail.value) f3 = (f3 * 1.05).clamp(0, 135);
-    creditAgeScore.value = ((f3 / 135) * 100).round().clamp(0, 100);
+    if (_hasVerifiedPan.value) f3 = (f3 * 1.1).clamp(0, 90);
+    if (_hasVerifiedEmail.value) f3 = (f3 * 1.05).clamp(0, 90);
+    creditAgeScore.value = ((f3 / 90) * 100).round().clamp(0, 100);
     creditAgeMonths.value = ageMonths;
 
-    // ── Factor 4: Credit Mix (10% → max 90 points) ───────────────────────────
-    // Having both secured (e.g., asset-backed) and unsecured loans = better mix
-    double f4 = 45; // Base: unsecured personal loan
-    if (_hasActiveSecuredLoan.value) f4 = 90; // Has secured loan too = full points
-    if (_onTimeCount.value > 2) f4 = f4.clamp(0, 90); // reward good history
-    creditMixScore.value = ((f4 / 90) * 100).round().clamp(0, 100);
+    // ── Factor 4: Credit Mix (10% → max 60 points) ───────────────────────────
+    double f4 = 36;
+    if (_hasActiveSecuredLoan.value) f4 = 60;
+    if (_onTimeCount.value > 2) f4 = f4.clamp(0, 60);
+    creditMixScore.value = ((f4 / 60) * 100).round().clamp(0, 100);
 
-    // ── Factor 5: New Credit / Recent Inquiries (10% → max 90 points) ────────
-    double f5 = 90;
+    // ── Factor 5: New Credit / Recent Inquiries (10% → max 60 points) ────────
+    double f5 = 60;
     final inq = _inquiriesLast6Months.value;
     if (inq == 0) {
-      f5 = 90;
+      f5 = 60;
     } else if (inq == 1) {
-      f5 = 81;
+      f5 = 52;
     } else if (inq == 2) {
-      f5 = 63;
+      f5 = 40;
     } else if (inq <= 4) {
-      f5 = 36;
+      f5 = 26;
     } else {
-      f5 = 18; // Many inquiries = risky
+      f5 = 12;
     }
-    inquiryScore.value = ((f5 / 90) * 100).round().clamp(0, 100);
+    inquiryScore.value = ((f5 / 60) * 100).round().clamp(0, 100);
     recentInquiries.value = inq;
 
-    // ── Final Score ───────────────────────────────────────────────────────────
+    // ── Final Score (Base 300 + max 600 = 300 to 900) ────────────────────────
     final rawScore = 300 + f1 + f2 + f3 + f4 + f5;
     score.value = rawScore.round().clamp(300, 900);
 

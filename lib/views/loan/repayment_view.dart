@@ -559,16 +559,19 @@ class _RepaymentViewState extends State<RepaymentView> {
           Text('Or pay using',
               style: GoogleFonts.inter(fontSize: 11, color: AppColors.textGrey)),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              _quickPayApp('GPay', Colors.blue.shade700, Icons.g_mobiledata_rounded),
-              const SizedBox(width: 8),
-              _quickPayApp('PhonePe', const Color(0xFF5F259F), Icons.phone_android_rounded),
-              const SizedBox(width: 8),
-              _quickPayApp('Paytm', Colors.blue.shade400, Icons.account_balance_wallet_outlined),
-              const SizedBox(width: 8),
-              _quickPayApp('BHIM', Colors.orange.shade700, Icons.currency_rupee_rounded),
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _quickPayApp('GPay', Colors.blue.shade700, Icons.g_mobiledata_rounded),
+                const SizedBox(width: 8),
+                _quickPayApp('PhonePe', const Color(0xFF5F259F), Icons.phone_android_rounded),
+                const SizedBox(width: 8),
+                _quickPayApp('Paytm', Colors.blue.shade400, Icons.account_balance_wallet_outlined),
+                const SizedBox(width: 8),
+                _quickPayApp('BHIM', Colors.orange.shade700, Icons.currency_rupee_rounded),
+              ],
+            ),
           ),
         ],
       ),

@@ -46,20 +46,7 @@ class _HomeDashboardViewState extends State<HomeDashboardView> {
           IconButton(
             icon: const Icon(Icons.logout_rounded, color: AppColors.textGrey),
             tooltip: 'Logout',
-            onPressed: () {
-              Get.defaultDialog(
-                title: 'Logout',
-                middleText: 'Are you sure you want to log out from CreditSea?',
-                textConfirm: 'Logout',
-                textCancel: 'Cancel',
-                confirmTextColor: Colors.white,
-                buttonColor: AppColors.errorRed,
-                onConfirm: () {
-                  Get.back();
-                  _authController.logout();
-                },
-              );
-            },
+            onPressed: () => _showLogoutDialog(context),
           ),
         ],
       ),
@@ -276,99 +263,310 @@ class _HomeDashboardViewState extends State<HomeDashboardView> {
     });
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.white,
+        elevation: 8,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Red soft icon badge
+              Container(
+                width: 60,
+                height: 60,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFEE2E2), // soft red
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.logout_rounded,
+                  color: Color(0xFFDC2626),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              // Title
+              Text(
+                'Log Out of CreditSea?',
+                style: GoogleFonts.outfit(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+
+              // Subtitle
+              Text(
+                'Are you sure you want to log out? You will need to sign in again to access your loan account.',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: AppColors.textGrey,
+                  height: 1.45,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        side: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Cancel',
+                        style: GoogleFonts.inter(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        _authController.logout();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        backgroundColor: const Color(0xFFDC2626),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Log Out',
+                        style: GoogleFonts.inter(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildCreditScoreCard() {
     return Obx(() {
       final score = _creditController.score.value;
       final category = _creditController.category.value;
+      final onTimePercent = _creditController.onTimePercent.value;
+      final utilization = _creditController.creditUtilization.value;
+      final inquiries = _creditController.recentInquiries.value;
+      final progress = ((score - 300) / 600).clamp(0.0, 1.0);
 
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFF0A4D92), Color(0xFF0F62BC)],
+            colors: [Color(0xFF0052CC), Color(0xFF00388F)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withValues(alpha: 0.25),
-              blurRadius: 12,
-              offset: const Offset(0, 5),
+              color: const Color(0xFF0052CC).withValues(alpha: 0.3),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Credit Health Score (Bonus)',
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white.withValues(alpha: 0.9),
-                  ),
+                Row(
+                  children: [
+                    const Icon(Icons.speed_rounded, color: Colors.white, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Credit Health Score',
+                      style: GoogleFonts.outfit(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.accentCyan.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.accentCyan, width: 1),
+                    color: const Color(0xFF00E5B5).withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFF00E5B5), width: 1.2),
                   ),
                   child: Text(
                     category,
-                    style: const TextStyle(
-                      fontSize: 11.5,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.accentCyan,
+                      color: const Color(0xFF00E5B5),
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
+
+            // Score Display
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   '$score',
                   style: GoogleFonts.outfit(
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 44,
+                    fontWeight: FontWeight.w900,
                     color: Colors.white,
                     height: 1.0,
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 8),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 6),
                   child: Text(
                     '/ 900',
                     style: GoogleFonts.inter(
-                      fontSize: 15,
-                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => Get.toNamed(AppRoutes.repayment),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Boost Score',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_forward_ios_rounded, size: 10, color: Colors.white),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              'High score unlocks instant approval & lowest 1% daily interest rate.',
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                color: Colors.white.withValues(alpha: 0.85),
+            const SizedBox(height: 14),
+
+            // Progress Bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: Colors.white.withValues(alpha: 0.15),
+                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00E5B5)),
+                minHeight: 7,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('300 Poor', style: GoogleFonts.inter(fontSize: 10, color: Colors.white54)),
+                Text('650 Fair', style: GoogleFonts.inter(fontSize: 10, color: Colors.white54)),
+                Text('750 Good', style: GoogleFonts.inter(fontSize: 10, color: Colors.white70)),
+                Text('900 Excellent', style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF00E5B5))),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // 3 Live Factor Chips
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildMetricMini('Payment History', onTimePercent, Icons.check_circle_outline),
+                  Container(width: 1, height: 26, color: Colors.white24),
+                  _buildMetricMini('Utilization', utilization, Icons.pie_chart_outline),
+                  Container(width: 1, height: 26, color: Colors.white24),
+                  _buildMetricMini('Inquiries', '$inquiries Low', Icons.search_rounded),
+                ],
               ),
             ),
           ],
         ),
       );
     });
+  }
+
+  Widget _buildMetricMini(String label, String value, IconData icon) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 12, color: Colors.white70),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: GoogleFonts.inter(fontSize: 10, color: Colors.white70),
+            ),
+          ],
+        ),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          style: GoogleFonts.outfit(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildActionTile({
