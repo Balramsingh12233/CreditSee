@@ -143,27 +143,30 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
 
   Widget _buildSlideIcon(String type) {
     if (type == 'grid') {
-      // Slide 1: Flexible Loan Options - 4-box grid with car, bike, laptop, phone
-      return Container(
+      // Slide 1: Flexible Loan Options — 4 free-floating rounded square tiles in space (no outer border/card)
+      return SizedBox(
         width: 140,
-        height: 130,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        ),
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
+        height: 140,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildMiniTile(Icons.directions_car_rounded),
-            _buildMiniTile(Icons.two_wheeler_rounded),
-            _buildMiniTile(Icons.laptop_mac_rounded),
-            _buildMiniTile(Icons.smartphone_rounded),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildFreeTile(Icons.directions_car_rounded),
+                const SizedBox(width: 14),
+                _buildFreeTile(Icons.two_wheeler_rounded),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildFreeTile(Icons.laptop_mac_rounded),
+                const SizedBox(width: 14),
+                _buildFreeTile(Icons.smartphone_rounded),
+              ],
+            ),
           ],
         ),
       );
@@ -186,14 +189,16 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
     }
   }
 
-  Widget _buildMiniTile(IconData icon) {
+  Widget _buildFreeTile(IconData icon) {
     return Container(
+      width: 58,
+      height: 58,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(10),
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: Center(
-        child: Icon(icon, color: Colors.white, size: 22),
+        child: Icon(icon, color: Colors.white, size: 28),
       ),
     );
   }

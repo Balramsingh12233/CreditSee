@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../core/theme/app_colors.dart';
 import '../../routes/app_routes.dart';
-import '../widgets/stepper_header.dart';
 
 class DetailsLoadingView extends StatefulWidget {
   const DetailsLoadingView({super.key});
@@ -22,11 +20,11 @@ class _DetailsLoadingViewState extends State<DetailsLoadingView>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1300),
+      duration: const Duration(milliseconds: 1400),
     )..repeat();
 
-    // Navigate to Personal Details after shimmer
-    _timer = Timer(const Duration(milliseconds: 1400), () {
+    // Smooth transition to Personal Details screen
+    _timer = Timer(const Duration(milliseconds: 1600), () {
       if (mounted) Get.offNamed(AppRoutes.personalDetails);
     });
   }
@@ -41,65 +39,103 @@ class _DetailsLoadingViewState extends State<DetailsLoadingView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: SafeArea(child: StepperHeader(currentStep: 1)),
-      ),
+      backgroundColor: const Color(0xFFF1F5F9),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Top stepper-like bar ──────────────────────────────────
-                  _shimmerBox(width: double.infinity, height: 10, radius: 5),
-                  const SizedBox(height: 20),
-
-                  // ── Page title skeleton ───────────────────────────────────
-                  _shimmerBox(width: 160, height: 22, radius: 6),
-                  const SizedBox(height: 20),
-
-                  // ── First Name + Last Name ────────────────────────────────
-                  Row(
-                    children: [
-                      Expanded(child: _shimmerBox(height: 48, radius: 10)),
-                      const SizedBox(width: 12),
-                      Expanded(child: _shimmerBox(height: 48, radius: 10)),
-                    ],
+        bottom: false,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Top Rounded Pill Bar (Exact 1:1 match with Figma wireframe) ──
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: _shimmerBox(
+                    width: double.infinity,
+                    height: 16,
+                    radius: 8,
                   ),
-                  const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 10),
 
-                  // ── Gender dropdown ───────────────────────────────────────
-                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
-                  const SizedBox(height: 16),
+                // ── White Card (Extends seamlessly to bottom with top rounded corners) ──
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title skeleton bar
+                        _shimmerBox(width: 150, height: 20, radius: 6),
+                        const SizedBox(height: 24),
 
-                  // ── Date of Birth ─────────────────────────────────────────
-                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
-                  const SizedBox(height: 16),
+                        // Two-Column: First Name & Last Name (Label + Input)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _shimmerBox(width: 80, height: 12, radius: 4),
+                                  const SizedBox(height: 8),
+                                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _shimmerBox(width: 80, height: 12, radius: 4),
+                                  const SizedBox(height: 8),
+                                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
 
-                  // ── Marital status label skeleton ─────────────────────────
-                  _shimmerBox(width: 140, height: 14, radius: 5),
-                  const SizedBox(height: 8),
+                        // Gender Field (Label + Input)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _shimmerBox(width: 70, height: 12, radius: 4),
+                            const SizedBox(height: 8),
+                            _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
 
-                  // ── Marital status field ──────────────────────────────────
-                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
-                  const SizedBox(height: 16),
+                        // Date of Birth Field (Label + Input)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _shimmerBox(width: 100, height: 12, radius: 4),
+                            const SizedBox(height: 8),
+                            _shimmerBox(width: double.infinity, height: 48, radius: 10),
+                          ],
+                        ),
 
-                  // ── Extra field ───────────────────────────────────────────
-                  _shimmerBox(width: double.infinity, height: 48, radius: 10),
-                  const Spacer(),
+                        const Spacer(),
 
-                  // ── Continue button skeleton ──────────────────────────────
-                  _shimmerBox(width: double.infinity, height: 50, radius: 10),
-                  const SizedBox(height: 8),
-                ],
-              );
-            },
-          ),
+                        // Bottom Continue Button skeleton
+                        _shimmerBox(width: double.infinity, height: 50, radius: 10),
+                        const SizedBox(height: 8),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -115,10 +151,12 @@ class _DetailsLoadingViewState extends State<DetailsLoadingView>
       shaderCallback: (bounds) => LinearGradient(
         colors: const [
           Color(0xFFE2E8F0),
-          Color(0xFFF8FAFC),
+          Color(0xFFF1F5F9),
+          Color(0xFFFFFFFF),
+          Color(0xFFF1F5F9),
           Color(0xFFE2E8F0),
         ],
-        stops: const [0.1, 0.5, 0.9],
+        stops: const [0.0, 0.35, 0.5, 0.65, 1.0],
         begin: Alignment.centerLeft,
         end: Alignment.centerRight,
         transform: _SlidingGradientTransform(slidePercent: _controller.value),
@@ -127,7 +165,7 @@ class _DetailsLoadingViewState extends State<DetailsLoadingView>
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: AppColors.borderGrey,
+          color: const Color(0xFFE2E8F0),
           borderRadius: BorderRadius.circular(radius),
         ),
       ),
