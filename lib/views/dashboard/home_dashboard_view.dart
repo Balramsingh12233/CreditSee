@@ -148,6 +148,76 @@ class _HomeDashboardViewState extends State<HomeDashboardView> {
   Widget _buildActiveLoanCard() {
     return Obx(() {
       final appId = _loanController.applicationId.value;
+
+      // If user has not applied for any loan yet, show Apply CTA card
+      if (appId.isEmpty) {
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderGrey),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.buttonBlue.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.account_balance_wallet_rounded,
+                        color: AppColors.buttonBlue, size: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Instant Cash Loan',
+                            style: GoogleFonts.outfit(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.textDark)),
+                        Text('Get up to ₹1,00,000 in your account',
+                            style: GoogleFonts.inter(
+                                fontSize: 12, color: AppColors.textGrey)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Get.toNamed(AppRoutes.loanCalculator),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.buttonBlue,
+                  minimumSize: const Size.fromHeight(44),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+                child: Text('Apply for Loan',
+                    style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white)),
+              ),
+            ],
+          ),
+        );
+      }
+
       final status = _loanController.currentStatus.value;
       final step = _loanController.currentStep.value;
 

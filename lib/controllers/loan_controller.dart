@@ -20,11 +20,11 @@ class LoanController extends GetxController {
   final offerPayable = 10600.0.obs;
 
   // Screen 13: Application Status Tracking
-  final applicationId = '#CS12323'.obs;
-  final currentStep = 2.obs; // 1: Submitted, 2: Under Review, 3: E-KYC, 4: E-Nach, 5: E-Sign, 6: Disbursement
-  final currentStatus = 'Under Review'.obs;
+  final applicationId = ''.obs;
+  final currentStep = 1.obs; // 1: Submitted, 2: Under Review, 3: E-KYC, 4: E-Nach, 5: E-Sign, 6: Disbursement
+  final currentStatus = 'Submitted'.obs;
   final statusMessage =
-      "We're carefully reviewing your application to ensure everything is in order. Thank you for your patience.".obs;
+      "Your application has been received and is being processed.".obs;
 
   final isLoading = false.obs;
   final activeLoan = Rxn<LoanModel>();
@@ -47,9 +47,32 @@ class LoanController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    final savedId = StorageService.getActiveLoanId();
-    if (savedId != null) {
+    final user = StorageService.getUser();
+    final savedId = StorageService.getActiveLoanId(phone: user?.phone);
+    if (savedId != null && savedId.isNotEmpty) {
       applicationId.value = savedId;
+    }
+  }
+
+  void reset() {
+    applicationId.value = '';
+    currentStep.value = 1;
+    currentStatus.value = 'Submitted';
+    statusMessage.value = "Your application has been received and is being processed.";
+    activeLoan.value = null;
+    principalAmount.value = 30000.0;
+    tenureDays.value = 40;
+    offerAmount.value = 10000.0;
+    offerTenureDays.value = 90;
+    offerPayable.value = 10600.0;
+  }
+
+  void loadForUser(String phone) {
+    reset();
+    final savedId = StorageService.getActiveLoanId(phone: phone);
+    if (savedId != null && savedId.isNotEmpty) {
+      applicationId.value = savedId;
+      refreshStatus();
     }
   }
 
@@ -99,12 +122,12 @@ class LoanController extends GetxController {
     final user = StorageService.getUser();
     final newAppId = '#CS${10000 + (DateTime.now().millisecondsSinceEpoch % 89999)}';
     applicationId.value = newAppId;
-    await StorageService.saveActiveLoanId(newAppId);
+    await StorageService.saveActiveLoanId(newAppId, phone: user?.phone);
 
     final loan = LoanModel(
       applicationId: newAppId,
-      userPhone: user?.phone ?? '8800642354',
-      userName: user?.fullName ?? 'Rahul Sharma',
+      userPhone: user?.phone ?? '',
+      userName: user?.fullName ?? 'CreditSea Customer',
       purpose: purpose.value,
       principalAmount: principalAmount.value,
       tenureDays: tenureDays.value,

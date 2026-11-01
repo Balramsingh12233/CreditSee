@@ -5,6 +5,8 @@ import '../core/network/api_client.dart';
 import '../core/services/storage_service.dart';
 import '../data/models/user_model.dart';
 import '../routes/app_routes.dart';
+import 'credit_score_controller.dart';
+import 'loan_controller.dart';
 
 class AuthController extends GetxController {
   final phoneNumber = ''.obs;
@@ -226,18 +228,21 @@ class AuthController extends GetxController {
 
         await StorageService.saveAuthToken(token);
         await StorageService.saveUser(user);
-        // Save password locally for offline sign-in verification
         await StorageService.savePassword(phoneNumber.value, pass);
+        // Clear any previous active loan for this new registration
+        await StorageService.clearActiveLoan(phone: phoneNumber.value);
         currentUser.value = user;
 
-        Get.snackbar(
-          'Account Created',
-          'Please enter your credentials to sign in',
-          backgroundColor: Colors.green.shade700,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
-        );
-        Get.offNamed(AppRoutes.signIn);
+        // Reset controllers for a clean, fresh registration
+        if (Get.isRegistered<LoanController>()) {
+          Get.find<LoanController>().reset();
+        }
+        if (Get.isRegistered<CreditScoreController>()) {
+          Get.find<CreditScoreController>().resetForNewUser();
+        }
+
+        // Direct transition to details loading shimmer (Screen 4 in Figma)
+        Get.offNamed(AppRoutes.detailsLoading);
         return true;
       }
     } catch (e) {
@@ -251,18 +256,20 @@ class AuthController extends GetxController {
       );
       await StorageService.saveAuthToken('mock_token_${DateTime.now().millisecondsSinceEpoch}');
       await StorageService.saveUser(mockUser);
-      // Save password locally for offline sign-in verification
       await StorageService.savePassword(phoneNumber.value, pass);
+      await StorageService.clearActiveLoan(phone: phoneNumber.value);
       currentUser.value = mockUser;
 
-      Get.snackbar(
-        'Account Created',
-        'Please enter your credentials to sign in',
-        backgroundColor: Colors.green.shade700,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-      );
-      Get.offNamed(AppRoutes.signIn);
+      // Reset controllers for a clean, fresh registration
+      if (Get.isRegistered<LoanController>()) {
+        Get.find<LoanController>().reset();
+      }
+      if (Get.isRegistered<CreditScoreController>()) {
+        Get.find<CreditScoreController>().resetForNewUser();
+      }
+
+      // Direct transition to details loading shimmer (Screen 4 in Figma)
+      Get.offNamed(AppRoutes.detailsLoading);
       return true;
     }
     isLoading.value = false;
@@ -273,8 +280,7 @@ class AuthController extends GetxController {
     if (user == null) return false;
     final hasName = user.firstName != null && user.firstName!.trim().isNotEmpty;
     final hasPan = user.pan != null && user.pan!.trim().isNotEmpty;
-    final hasActiveLoan = StorageService.getActiveLoanId() != null;
-    return hasName || hasPan || hasActiveLoan;
+    return hasName && hasPan;
   }
 
   // 4. Sign In (Screen 5 & 8)
@@ -311,6 +317,14 @@ class AuthController extends GetxController {
         currentUser.value = user;
         phoneNumber.value = cleanPhone;
 
+        // Load user-specific loan and credit score
+        if (Get.isRegistered<LoanController>()) {
+          Get.find<LoanController>().loadForUser(cleanPhone);
+        }
+        if (Get.isRegistered<CreditScoreController>()) {
+          Get.find<CreditScoreController>().loadForUser(user);
+        }
+
         // If user already completed their profile, take them straight to Dashboard!
         if (_isProfileComplete(user)) {
           Get.offAllNamed(AppRoutes.homeDashboard);
@@ -335,6 +349,14 @@ class AuthController extends GetxController {
         await StorageService.saveUser(activeUser);
         currentUser.value = activeUser;
         phoneNumber.value = cleanPhone;
+
+        // Load user-specific loan and credit score
+        if (Get.isRegistered<LoanController>()) {
+          Get.find<LoanController>().loadForUser(cleanPhone);
+        }
+        if (Get.isRegistered<CreditScoreController>()) {
+          Get.find<CreditScoreController>().loadForUser(activeUser);
+        }
 
         // If user already completed their profile, take them straight to Dashboard!
         if (_isProfileComplete(activeUser)) {
@@ -554,6 +576,16 @@ class AuthController extends GetxController {
   void logout() async {
     await StorageService.clearSession();
     currentUser.value = null;
+    phoneNumber.value = '';
+
+    // Clean reset of controllers so next user starts fresh
+    if (Get.isRegistered<LoanController>()) {
+      Get.find<LoanController>().reset();
+    }
+    if (Get.isRegistered<CreditScoreController>()) {
+      Get.find<CreditScoreController>().resetForNewUser();
+    }
+
     Get.offAllNamed(AppRoutes.onboarding);
   }
 }

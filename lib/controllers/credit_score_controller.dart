@@ -62,19 +62,45 @@ class CreditScoreController extends GetxController {
   void _loadFromStorage() {
     final user = StorageService.getUser();
     if (user != null) {
-      // Seed initial values from user profile
+      loadForUser(user);
+    } else {
+      resetForNewUser();
+    }
+  }
+
+  void resetForNewUser() {
+    _resetInternalState();
+    _recalculate();
+  }
+
+  void _resetInternalState() {
+    _hasVerifiedPan.value = false;
+    _hasVerifiedEmail.value = false;
+    _hasActiveSecuredLoan.value = false;
+    _accountAgeMonths.value = 0;
+    _onTimeCount.value = 0;
+    _missedCount.value = 0;
+    _totalLoanAmount.value = 0;
+    _usedAmount.value = 0;
+    _inquiriesLast6Months.value = 0;
+  }
+
+  void loadForUser(UserModel user) {
+    _hasVerifiedPan.value = user.isPanVerified;
+    _hasVerifiedEmail.value = user.isEmailVerified;
+
+    final activeLoan = StorageService.getActiveLoanId(phone: user.phone);
+    if (activeLoan != null && activeLoan.isNotEmpty) {
+      _accountAgeMonths.value = 6;
+      _onTimeCount.value = 2;
+      _totalLoanAmount.value = 30000;
+      _usedAmount.value = 15000;
+      _inquiriesLast6Months.value = 1;
+    } else {
+      _resetInternalState();
       _hasVerifiedPan.value = user.isPanVerified;
       _hasVerifiedEmail.value = user.isEmailVerified;
-
-      // Simulate 6 months of account age for existing users
-      _accountAgeMonths.value = 6;
-      _onTimeCount.value = 2;       // modest history → realistic score
-      _totalLoanAmount.value = 30000;
-      _usedAmount.value = 15000;    // 50% utilization
-      _inquiriesLast6Months.value = 1;
     }
-    // Always derive score from recalculation — never blindly load stored value
-    // This ensures score reflects real factors, not a stale/seeded cached number
     _recalculate();
   }
 

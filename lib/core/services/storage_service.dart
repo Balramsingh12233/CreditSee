@@ -54,12 +54,28 @@ class StorageService {
     return null;
   }
 
-  static Future<void> saveActiveLoanId(String loanId) async {
+  static Future<void> saveActiveLoanId(String loanId, {String? phone}) async {
     await _prefs?.setString(AppConstants.keyActiveLoanId, loanId);
+    final p = phone ?? getUser()?.phone;
+    if (p != null && p.isNotEmpty) {
+      await _prefs?.setString('active_loan_$p', loanId);
+    }
   }
 
-  static String? getActiveLoanId() {
+  static String? getActiveLoanId({String? phone}) {
+    final p = phone ?? getUser()?.phone;
+    if (p != null && p.isNotEmpty) {
+      return _prefs?.getString('active_loan_$p');
+    }
     return _prefs?.getString(AppConstants.keyActiveLoanId);
+  }
+
+  static Future<void> clearActiveLoan({String? phone}) async {
+    await _prefs?.remove(AppConstants.keyActiveLoanId);
+    final p = phone ?? getUser()?.phone;
+    if (p != null && p.isNotEmpty) {
+      await _prefs?.remove('active_loan_$p');
+    }
   }
 
   static Future<void> setCustomBaseUrl(String url) async {
@@ -82,7 +98,8 @@ class StorageService {
   static Future<void> clearSession() async {
     await _prefs?.remove(AppConstants.keyToken);
     await _prefs?.remove(AppConstants.keyUser);
+    await _prefs?.remove(AppConstants.keyActiveLoanId);
     await _prefs?.setBool(AppConstants.keyIsLoggedIn, false);
-    // keep activeLoanId, customBaseUrl, and saved passwords intact
+    // keep user profiles by phone, customBaseUrl, and saved passwords intact
   }
 }
