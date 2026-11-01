@@ -279,7 +279,6 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
         border: Border.all(color: borderColor, width: isCurrent || isDone ? 1.5 : 1.0),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (stepNum == 2 && isCurrent)
             SvgPicture.asset(
@@ -293,14 +292,15 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
               color: iconColor,
               size: 20,
             ),
-          const SizedBox(width: 10),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: isCurrent || isDone ? FontWeight.w600 : FontWeight.w500,
-              color: textColor,
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              title,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: isCurrent || isDone ? FontWeight.w600 : FontWeight.w500,
+                color: textColor,
+              ),
             ),
           ),
         ],
