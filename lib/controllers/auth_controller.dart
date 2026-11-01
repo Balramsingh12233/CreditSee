@@ -269,6 +269,14 @@ class AuthController extends GetxController {
     return false;
   }
 
+  bool _isProfileComplete(UserModel? user) {
+    if (user == null) return false;
+    final hasName = user.firstName != null && user.firstName!.trim().isNotEmpty;
+    final hasPan = user.pan != null && user.pan!.trim().isNotEmpty;
+    final hasActiveLoan = StorageService.getActiveLoanId() != null;
+    return hasName || hasPan || hasActiveLoan;
+  }
+
   // 4. Sign In (Screen 5 & 8)
   Future<bool> signIn(String phone, String pass) async {
     final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
@@ -303,22 +311,37 @@ class AuthController extends GetxController {
         currentUser.value = user;
         phoneNumber.value = cleanPhone;
 
-        Get.offAllNamed(AppRoutes.detailsLoading);
+        // If user already completed their profile, take them straight to Dashboard!
+        if (_isProfileComplete(user)) {
+          Get.offAllNamed(AppRoutes.homeDashboard);
+        } else {
+          Get.offAllNamed(AppRoutes.detailsLoading);
+        }
         return true;
       }
     } catch (e) {
       isLoading.value = false;
-      // Offline fallback: verify BOTH phone AND password against locally saved credentials
-      final savedUser = StorageService.getUser();
+      // Offline fallback: check both current user and permanently saved user by phone
+      final savedUser = StorageService.getSavedUserByPhone(cleanPhone) ?? StorageService.getUser();
       final savedPassword = StorageService.getSavedPassword(cleanPhone);
 
-      final phoneMatches = savedUser != null && savedUser.phone == cleanPhone;
+      final phoneMatches = (savedUser != null && savedUser.phone == cleanPhone) ||
+                           (savedPassword != null);
       final passwordMatches = savedPassword != null && savedPassword == pass;
 
       if (phoneMatches && passwordMatches) {
-        currentUser.value = savedUser;
+        final activeUser = savedUser ?? UserModel(phone: cleanPhone, creditScore: 750);
+        await StorageService.saveAuthToken('mock_token_${DateTime.now().millisecondsSinceEpoch}');
+        await StorageService.saveUser(activeUser);
+        currentUser.value = activeUser;
         phoneNumber.value = cleanPhone;
-        Get.offAllNamed(AppRoutes.detailsLoading);
+
+        // If user already completed their profile, take them straight to Dashboard!
+        if (_isProfileComplete(activeUser)) {
+          Get.offAllNamed(AppRoutes.homeDashboard);
+        } else {
+          Get.offAllNamed(AppRoutes.detailsLoading);
+        }
         return true;
       } else if (phoneMatches && !passwordMatches) {
         Get.snackbar(

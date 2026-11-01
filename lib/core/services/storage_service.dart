@@ -26,10 +26,25 @@ class StorageService {
   static Future<void> saveUser(UserModel user) async {
     final jsonStr = jsonEncode(user.toJson());
     await _prefs?.setString(AppConstants.keyUser, jsonStr);
+    // Also save permanently by phone number so user profile persists across logouts
+    if (user.phone.isNotEmpty) {
+      await _prefs?.setString('user_profile_${user.phone}', jsonStr);
+    }
   }
 
   static UserModel? getUser() {
     final jsonStr = _prefs?.getString(AppConstants.keyUser);
+    if (jsonStr != null && jsonStr.isNotEmpty) {
+      try {
+        final map = jsonDecode(jsonStr);
+        return UserModel.fromJson(map);
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  static UserModel? getSavedUserByPhone(String phone) {
+    final jsonStr = _prefs?.getString('user_profile_$phone');
     if (jsonStr != null && jsonStr.isNotEmpty) {
       try {
         final map = jsonDecode(jsonStr);
