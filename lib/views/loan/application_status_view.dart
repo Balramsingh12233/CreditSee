@@ -273,6 +273,7 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
     }
 
     return Container(
+      width: double.infinity,
       height: 48,
       decoration: BoxDecoration(
         color: Colors.white,

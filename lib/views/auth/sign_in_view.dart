@@ -44,116 +44,201 @@ class _SignInViewState extends State<SignInView> {
       body: Column(
         children: [
           const AuthHeaderCarousel(initialPage: 2),
+
+          // ── Bottom White Card with glowing gradient top border (Figma) ──
           Expanded(
             child: Container(
               width: double.infinity,
               decoration: const BoxDecoration(
-                color: Colors.white,
+                gradient: LinearGradient(
+                  colors: [Color(0xFF0066FF), Color(0xFF00C9A7), Color(0xFF00E5B5)],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Please enter your credentials',
-                      style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textDark),
-                    ),
-                    const SizedBox(height: 22),
-
-                    Text('Mobile Number', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textMedium)),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Container(
-                          height: 50,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: AppColors.borderGrey, width: 1.2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            children: [
-                              const Text('🇮🇳', style: TextStyle(fontSize: 18)),
-                              const SizedBox(width: 6),
-                              Text('+91', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-                            ],
-                          ),
+              padding: const EdgeInsets.only(top: 2.5),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Please enter your credentials',
+                        style: GoogleFonts.outfit(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textDark,
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: SizedBox(
+                      ),
+                      const SizedBox(height: 22),
+
+                      Text(
+                        'Mobile Number',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textMedium,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
                             height: 50,
-                            child: TextField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.phone,
-                              maxLength: 10,
-                              decoration: InputDecoration(
-                                counterText: '',
-                                hintText: 'Please enter your mobile no.',
-                                hintStyle: GoogleFonts.inter(fontSize: 13.5, color: AppColors.textLight),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: AppColors.borderGrey, width: 1.2),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                const Text('🇮🇳', style: TextStyle(fontSize: 18)),
+                                const SizedBox(width: 6),
+                                Text(
+                                  '+91',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textDark,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: SizedBox(
+                              height: 50,
+                              child: TextField(
+                                controller: _phoneController,
+                                keyboardType: TextInputType.phone,
+                                maxLength: 10,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  hintText: 'Please enter your mobile no.',
+                                  hintStyle: GoogleFonts.inter(
+                                    fontSize: 13.5,
+                                    color: AppColors.textLight,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
 
-                    Text('Enter password', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textMedium)),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _passController,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        hintText: 'Enter password',
-                        suffixIcon: IconButton(
-                          icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.textLight, size: 20),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      Text(
+                        'Enter password',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textMedium,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.onboarding),
-                        child: Text('Forgot password?', style: GoogleFonts.inter(fontSize: 12, color: AppColors.buttonBlue, fontWeight: FontWeight.w600)),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    Obx(() => ElevatedButton(
-                      onPressed: _authController.isLoading.value
-                          ? null
-                          : () => _authController.signIn(_phoneController.text.trim(), _passController.text.trim()),
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.buttonBlue, minimumSize: const Size.fromHeight(50)),
-                      child: _authController.isLoading.value
-                          ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.2))
-                          : Text('Sign In', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
-                    )),
-                    const SizedBox(height: 20),
-
-                    Center(
-                      child: RichText(
-                        text: TextSpan(
-                          text: 'New to CreditSea? ',
-                          style: GoogleFonts.inter(fontSize: 13.5, color: AppColors.textGrey),
-                          children: [
-                            TextSpan(
-                              text: 'Create an account',
-                              style: GoogleFonts.inter(fontSize: 13.5, color: AppColors.buttonBlue, fontWeight: FontWeight.w600),
-                              recognizer: TapGestureRecognizer()..onTap = () => Get.toNamed(AppRoutes.onboarding),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _passController,
+                        obscureText: _obscurePassword,
+                        decoration: InputDecoration(
+                          hintText: 'Enter password',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                              color: AppColors.textLight,
+                              size: 20,
                             ),
-                          ],
+                            onPressed: () =>
+                                setState(() => _obscurePassword = !_obscurePassword),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
+                          onTap: () => Get.toNamed(AppRoutes.onboarding),
+                          child: Text(
+                            'Forgot password?',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: AppColors.buttonBlue,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      Obx(() => ElevatedButton(
+                        onPressed: _authController.isLoading.value
+                            ? null
+                            : () => _authController.signIn(
+                                _phoneController.text.trim(),
+                                _passController.text.trim(),
+                              ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.buttonBlue,
+                          minimumSize: const Size.fromHeight(50),
+                        ),
+                        child: _authController.isLoading.value
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.2,
+                                ),
+                              )
+                            : Text(
+                                'Sign In',
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      )),
+                      const SizedBox(height: 20),
+
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'New to CreditSea? ',
+                            style: GoogleFonts.inter(
+                              fontSize: 13.5,
+                              color: AppColors.textGrey,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Create an account',
+                                style: GoogleFonts.inter(
+                                  fontSize: 13.5,
+                                  color: AppColors.buttonBlue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => Get.toNamed(AppRoutes.onboarding),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                  ),
                 ),
               ),
             ),
