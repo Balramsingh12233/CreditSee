@@ -4,16 +4,18 @@ import '../../core/theme/app_colors.dart';
 
 class StepperHeader extends StatelessWidget {
   final int currentStep; // 1: Register, 2: Offer, 3: Approval
+  final Color backgroundColor;
 
   const StepperHeader({
     super.key,
     required this.currentStep,
+    this.backgroundColor = Colors.transparent,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: backgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

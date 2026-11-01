@@ -60,13 +60,7 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: SafeArea(
-          child: StepperHeader(currentStep: 3), // Step 3: Approval
-        ),
-      ),
+      backgroundColor: const Color(0xFFF1F5F9),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => DemoStatusSheet.show(context),
         backgroundColor: AppColors.primaryBlue,
@@ -76,36 +70,52 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
           style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      body: SafeArea(
+        bottom: false,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Back Arrow + Title (Screen 13)
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 12),
-                    child: Icon(
-                      Icons.arrow_back_rounded,
-                      color: AppColors.textDark,
-                      size: 24,
-                    ),
-                  ),
+            // Top Stepper on light grey background (Figma design)
+            const StepperHeader(currentStep: 3),
+            const SizedBox(height: 8),
+
+            // White Card with rounded top corners enclosing back arrow, title & status tracker
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 ),
-                Text(
-                  'Application Status',
-                  style: GoogleFonts.outfit(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Back Arrow + Title (Inside Card)
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => Get.back(),
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 12),
+                              child: Icon(
+                                Icons.arrow_back_rounded,
+                                color: AppColors.textDark,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Application Status',
+                            style: GoogleFonts.outfit(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
 
             // Subtitle: Loan application no. #CS12323
             Padding(
@@ -197,26 +207,34 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
               ),
             ),
             const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
       // Pinned Continue Button at screen bottom
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-          child: ElevatedButton(
-            onPressed: () {
-              Get.offAllNamed(AppRoutes.homeDashboard);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.buttonBlue,
-              minimumSize: const Size.fromHeight(50),
-            ),
-            child: Text(
-              'Continue',
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+            child: ElevatedButton(
+              onPressed: () {
+                Get.offAllNamed(AppRoutes.homeDashboard);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonBlue,
+                minimumSize: const Size.fromHeight(50),
+              ),
+              child: Text(
+                'Continue',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),

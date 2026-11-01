@@ -95,43 +95,53 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(60),
-        child: SafeArea(
-          child: StepperHeader(currentStep: 1), // Step 1: Register
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      backgroundColor: const Color(0xFFF1F5F9),
+      body: SafeArea(
+        bottom: false,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Back Arrow + Title (Image 2 Screen 1)
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 12),
-                    child: Icon(
-                      Icons.arrow_back_rounded,
-                      color: AppColors.textDark,
-                      size: 24,
-                    ),
-                  ),
+            // Top Stepper on light grey background (Figma design)
+            const StepperHeader(currentStep: 1),
+            const SizedBox(height: 8),
+
+            // White Card with rounded top corners enclosing back arrow, title & form
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 ),
-                Text(
-                  'Personal Details',
-                  style: GoogleFonts.outfit(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Back Arrow + Title (Inside Card)
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => Get.back(),
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 12),
+                              child: Icon(
+                                Icons.arrow_back_rounded,
+                                color: AppColors.textDark,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            'Personal Details',
+                            style: GoogleFonts.outfit(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
 
             // First Name & Last Name (Two Columns - 1:1 Figma)
             Row(
@@ -243,13 +253,20 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
               },
             ),
             const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
       // Pinned Button at the bottom of the screen (1:1 Figma placement)
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
           child: Obx(
             () => ElevatedButton(
               onPressed: _authController.isLoading.value ? null : _onContinue,
@@ -277,6 +294,7 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
           ),
         ),
       ),
+    ),
     );
   }
 

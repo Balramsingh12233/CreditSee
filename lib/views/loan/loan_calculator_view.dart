@@ -47,31 +47,52 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF1F5F9),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF1F5F9),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textDark),
-          onPressed: () => Get.back(),
-        ),
-        title: const AppLogo(size: 32, isVertical: false, textColor: AppColors.primaryBlue),
+        automaticallyImplyLeading: false,
+        title: const AppLogo(size: 30, isVertical: false, textColor: AppColors.primaryBlue),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Title & Subtitle (1:1 Figma Matching)
-            Text(
-              'Apply for loan',
-              style: GoogleFonts.outfit(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
+      body: Column(
+        children: [
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
               ),
-            ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Back Arrow + Title (Inside Card — 1:1 Figma Matching)
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => Get.back(),
+                          child: const Padding(
+                            padding: EdgeInsets.only(right: 12),
+                            child: Icon(
+                              Icons.arrow_back_rounded,
+                              color: AppColors.textDark,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          'Apply for loan',
+                          style: GoogleFonts.outfit(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                      ],
+                    ),
             const SizedBox(height: 6),
             Text(
               "We've calculated your loan eligibility. Select your preferred loan amount and tenure.",
@@ -301,13 +322,19 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
               ),
             ),
             const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
-      ),
       // Pinned Action Buttons at the bottom (1:1 Figma placement)
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+      bottomNavigationBar: Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -363,6 +390,7 @@ class _LoanCalculatorViewState extends State<LoanCalculatorView> {
           ),
         ),
       ),
+    ),
     );
   }
 
