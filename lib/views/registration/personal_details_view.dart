@@ -146,213 +146,151 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      // System back button → go to sign in, not app close
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) Get.offAllNamed(AppRoutes.signIn);
       },
       child: Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            // Top Stepper on light grey background (Figma design)
-            const StepperHeader(currentStep: 1),
-            const SizedBox(height: 8),
-
-            // White Card with rounded top corners enclosing back arrow, title & form
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                ),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Back Arrow + Title (Inside Card)
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () => Get.offAllNamed(AppRoutes.signIn),
-                            child: const Padding(
-                              padding: EdgeInsets.only(right: 12),
-                              child: Icon(
-                                Icons.arrow_back_rounded,
-                                color: AppColors.textDark,
-                                size: 24,
+        backgroundColor: const Color(0xFFF1F5F9),
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              const StepperHeader(currentStep: 1),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  ),
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Back Arrow + Title
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () => Get.offAllNamed(AppRoutes.signIn),
+                              child: const Padding(
+                                padding: EdgeInsets.only(right: 12),
+                                child: Icon(Icons.arrow_back_rounded, color: AppColors.textDark, size: 24),
                               ),
                             ),
-                          ),
-                          Text(
-                            'Personal Details',
-                            style: GoogleFonts.outfit(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                            Text(
+                              'Personal Details',
+                              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+
+                        // First Name & Last Name
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildFieldLabel('First Name*'),
+                                  const SizedBox(height: 6),
+                                  TextField(controller: _firstNameController, decoration: const InputDecoration(hintText: 'Your first name')),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildFieldLabel('Last Name*'),
+                                  const SizedBox(height: 6),
+                                  TextField(controller: _lastNameController, decoration: const InputDecoration(hintText: 'Your last name')),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+
+                        // Gender
+                        _buildFieldLabel('Gender*'),
+                        const SizedBox(height: 6),
+                        DropdownButtonFormField<String>(
+                          initialValue: _selectedGender,
+                          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textMedium),
+                          decoration: const InputDecoration(hintText: 'Select your gender'),
+                          items: _genderOptions.map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
+                          onChanged: (val) => setState(() => _selectedGender = val),
+                        ),
+                        const SizedBox(height: 18),
+
+                        // Date of Birth
+                        _buildFieldLabel('Date of Birth*'),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _dobController,
+                          readOnly: true,
+                          onTap: _pickDate,
+                          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.textDark),
+                          decoration: InputDecoration(
+                            hintText: 'DD - MM - YYYY',
+                            hintStyle: GoogleFonts.inter(color: AppColors.textLight, fontSize: 14, letterSpacing: 0.5),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.calendar_month_outlined, color: AppColors.textMedium, size: 20),
+                              onPressed: _pickDate,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-
-            // First Name & Last Name (Two Columns - 1:1 Figma)
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildFieldLabel('First Name*'),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: _firstNameController,
-                        decoration: const InputDecoration(
-                          hintText: 'Your first name',
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildFieldLabel('Last Name*'),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: _lastNameController,
-                        decoration: const InputDecoration(
-                          hintText: 'Your last name',
+                        const SizedBox(height: 18),
+
+                        // Marital Status
+                        _buildFieldLabel('Your Marital Status *'),
+                        const SizedBox(height: 6),
+                        DropdownButtonFormField<String>(
+                          initialValue: _selectedMaritalStatus,
+                          icon: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.textMedium),
+                          decoration: const InputDecoration(hintText: 'Select your marital status'),
+                          items: _maritalOptions.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
+                          onChanged: (val) => setState(() => _selectedMaritalStatus = val),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-
-            // Gender Dropdown
-            _buildFieldLabel('Gender*'),
-            const SizedBox(height: 6),
-            DropdownButtonFormField<String>(
-              initialValue: _selectedGender,
-              icon: const Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: AppColors.textMedium,
-              ),
-              decoration: const InputDecoration(
-                hintText: 'Select your gender',
-              ),
-              items: _genderOptions
-                  .map((g) => DropdownMenuItem(value: g, child: Text(g)))
-                  .toList(),
-              onChanged: (val) {
-                setState(() => _selectedGender = val);
-              },
-            ),
-            const SizedBox(height: 18),
-
-            // Date of Birth (Showing DD - MM - YYYY format prompt as in Figma)
-            _buildFieldLabel('Date of Birth*'),
-            const SizedBox(height: 6),
-            TextField(
-              controller: _dobController,
-              readOnly: true,
-              onTap: _pickDate,
-              style: GoogleFonts.inter(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textDark,
-              ),
-              decoration: InputDecoration(
-                hintText: 'DD - MM - YYYY',
-                hintStyle: GoogleFonts.inter(
-                  color: AppColors.textLight,
-                  fontSize: 14,
-                  letterSpacing: 0.5,
-                ),
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.calendar_month_outlined,
-                    color: AppColors.textMedium,
-                    size: 20,
-                  ),
-                  onPressed: _pickDate,
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-
-            // Your Marital Status Dropdown (Strictly matching Figma UI)
-            _buildFieldLabel('Your Marital Status *'),
-            const SizedBox(height: 6),
-            DropdownButtonFormField<String>(
-              initialValue: _selectedMaritalStatus,
-              icon: const Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: AppColors.textMedium,
-              ),
-              decoration: const InputDecoration(
-                hintText: 'Select your marital status',
-              ),
-              items: _maritalOptions
-                  .map((m) => DropdownMenuItem(value: m, child: Text(m)))
-                  .toList(),
-              onChanged: (val) {
-                setState(() => _selectedMaritalStatus = val);
-              },
-            ),
-            const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      // Pinned Button at the bottom of the screen (1:1 Figma placement)
-      bottomNavigationBar: Container(
-        color: Colors.white,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-          child: Obx(
-            () => ElevatedButton(
-              onPressed: _authController.isLoading.value ? null : _onContinue,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.buttonBlue,
-                minimumSize: const Size.fromHeight(50),
-              ),
-              child: _authController.isLoading.value
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2.2,
-                      ),
-                    )
-                  : Text(
-                      'Continue',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                        const SizedBox(height: 24),
+                      ],
                     ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        bottomNavigationBar: Container(
+          color: Colors.white,
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              child: Obx(
+                () => ElevatedButton(
+                  onPressed: _authController.isLoading.value ? null : _onContinue,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonBlue,
+                    minimumSize: const Size.fromHeight(50),
+                  ),
+                  child: _authController.isLoading.value
+                      ? const SizedBox(
+                          width: 22, height: 22,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.2),
+                        )
+                      : Text('Continue', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600)),
+                ),
+              ),
             ),
           ),
         ),
       ),
-    ),
-    ); // closes PopScope
+    );
   }
 
   Widget _buildFieldLabel(String label) {
