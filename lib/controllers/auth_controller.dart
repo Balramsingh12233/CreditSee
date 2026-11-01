@@ -226,6 +226,8 @@ class AuthController extends GetxController {
 
         await StorageService.saveAuthToken(token);
         await StorageService.saveUser(user);
+        // Save password locally for offline sign-in verification
+        await StorageService.savePassword(phoneNumber.value, pass);
         currentUser.value = user;
 
         Get.snackbar(
@@ -249,6 +251,8 @@ class AuthController extends GetxController {
       );
       await StorageService.saveAuthToken('mock_token_${DateTime.now().millisecondsSinceEpoch}');
       await StorageService.saveUser(mockUser);
+      // Save password locally for offline sign-in verification
+      await StorageService.savePassword(phoneNumber.value, pass);
       currentUser.value = mockUser;
 
       Get.snackbar(
@@ -304,17 +308,30 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      // Check stored user credentials if offline
+      // Offline fallback: verify BOTH phone AND password against locally saved credentials
       final savedUser = StorageService.getUser();
-      if (savedUser != null && savedUser.phone == cleanPhone) {
+      final savedPassword = StorageService.getSavedPassword(cleanPhone);
+
+      final phoneMatches = savedUser != null && savedUser.phone == cleanPhone;
+      final passwordMatches = savedPassword != null && savedPassword == pass;
+
+      if (phoneMatches && passwordMatches) {
         currentUser.value = savedUser;
         phoneNumber.value = cleanPhone;
         Get.offAllNamed(AppRoutes.detailsLoading);
         return true;
+      } else if (phoneMatches && !passwordMatches) {
+        Get.snackbar(
+          'Wrong Password',
+          'Incorrect password. Please try again.',
+          backgroundColor: Colors.red.shade600,
+          colorText: Colors.white,
+        );
+        return false;
       } else {
         Get.snackbar(
           'Sign In Failed',
-          'Invalid mobile number or password. Please verify your credentials.',
+          'No account found for this mobile number. Please register first.',
           backgroundColor: Colors.red.shade600,
           colorText: Colors.white,
         );

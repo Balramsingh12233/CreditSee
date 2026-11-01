@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/auth_controller.dart';
 import '../../core/theme/app_colors.dart';
+import '../../routes/app_routes.dart';
 import '../widgets/stepper_header.dart';
 
 class PersonalDetailsView extends StatefulWidget {
@@ -144,7 +145,13 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      // System back button → go to sign in, not app close
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) Get.offAllNamed(AppRoutes.signIn);
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
       body: SafeArea(
         bottom: false,
@@ -171,7 +178,7 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
                       Row(
                         children: [
                           GestureDetector(
-                            onTap: () => Get.back(),
+                            onTap: () => Get.offAllNamed(AppRoutes.signIn),
                             child: const Padding(
                               padding: EdgeInsets.only(right: 12),
                               child: Icon(
@@ -345,7 +352,7 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
         ),
       ),
     ),
-    );
+    ); // closes PopScope
   }
 
   Widget _buildFieldLabel(String label) {

@@ -55,10 +55,19 @@ class StorageService {
     return _prefs?.getString(AppConstants.keyBaseUrl) ?? AppConstants.defaultBaseUrl;
   }
 
+  // ── Password (stored locally for offline verification) ────────────────────
+  static Future<void> savePassword(String phone, String hashedPass) async {
+    await _prefs?.setString('pwd_$phone', hashedPass);
+  }
+
+  static String? getSavedPassword(String phone) {
+    return _prefs?.getString('pwd_$phone');
+  }
+
   static Future<void> clearSession() async {
     await _prefs?.remove(AppConstants.keyToken);
     await _prefs?.remove(AppConstants.keyUser);
     await _prefs?.setBool(AppConstants.keyIsLoggedIn, false);
-    // keep activeLoanId or customBaseUrl intact
+    // keep activeLoanId, customBaseUrl, and saved passwords intact
   }
 }

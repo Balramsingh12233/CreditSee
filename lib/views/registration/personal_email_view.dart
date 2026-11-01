@@ -59,10 +59,12 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
 
   void _onVerify() {
     final email = _emailController.text.trim();
-    if (email.isEmpty || !email.contains('@')) {
+    // Proper email format: user@domain.tld
+    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
+    if (email.isEmpty || !emailRegex.hasMatch(email)) {
       Get.snackbar(
         'Invalid Email',
-        'Please enter a valid email address',
+        'Please enter a valid email address (e.g. name@example.com)',
         backgroundColor: Colors.red.shade600,
         colorText: Colors.white,
       );
