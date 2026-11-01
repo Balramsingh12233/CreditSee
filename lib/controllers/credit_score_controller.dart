@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../core/network/api_client.dart';
 import '../core/services/notification_service.dart';
 import '../core/services/storage_service.dart';
+import '../data/models/user_model.dart';
 
 /// CreditSea Credit Scoring Engine
 /// Implements CIBIL-like scoring with 5 real weighted factors.
