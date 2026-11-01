@@ -37,7 +37,7 @@ class DemoStatusSheet {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Evaluator Demo Controls',
+                    'Loan Status Simulator',
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -47,15 +47,16 @@ class DemoStatusSheet {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.amber.shade100,
+                      color: const Color(0xFFEFF6FF),
                       borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFF3B82F6), width: 0.8),
                     ),
-                    child: Text(
-                      'Live Demo Mode',
+                    child: const Text(
+                      'Interactive Demo',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.amber.shade900,
+                        color: Color(0xFF1D4ED8),
                       ),
                     ),
                   ),
@@ -63,7 +64,7 @@ class DemoStatusSheet {
               ),
               const SizedBox(height: 8),
               Text(
-                'Simulate backend status progression to evaluate tracking screen:',
+                'Simulate real-time loan progression to test tracking pipeline and push notifications:',
                 style: GoogleFonts.inter(fontSize: 12.5, color: AppColors.textGrey),
               ),
               const SizedBox(height: 16),
@@ -73,9 +74,9 @@ class DemoStatusSheet {
                 children: [
                   _buildStatusChip(ctx, loanController, 1, '1. Submitted'),
                   _buildStatusChip(ctx, loanController, 2, '2. Under Review'),
-                  _buildStatusChip(ctx, loanController, 3, '3. E-KYC Done'),
-                  _buildStatusChip(ctx, loanController, 4, '4. E-Nach Done'),
-                  _buildStatusChip(ctx, loanController, 5, '5. E-Sign Done'),
+                  _buildStatusChip(ctx, loanController, 3, '3. E-KYC Verified'),
+                  _buildStatusChip(ctx, loanController, 4, '4. E-Nach Active'),
+                  _buildStatusChip(ctx, loanController, 5, '5. E-Sign Complete'),
                   _buildStatusChip(ctx, loanController, 6, '6. Disbursed 🎉'),
                 ],
               ),
@@ -88,7 +89,7 @@ class DemoStatusSheet {
                   Get.toNamed(AppRoutes.repayment);
                 },
                 icon: const Icon(Icons.payment_rounded, color: Colors.white),
-                label: const Text('Open Razorpay / UPI Repayment Screen'),
+                label: const Text('Pay EMI / Mock Repayment (UPI & Cards)'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.successGreen,
                   minimumSize: const Size.fromHeight(46),

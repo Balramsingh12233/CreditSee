@@ -23,10 +23,9 @@ class _SignInViewState extends State<SignInView> {
   @override
   void initState() {
     super.initState();
-    _phoneController.text = _authController.phoneNumber.value.isNotEmpty
-        ? _authController.phoneNumber.value
-        : '8800642354';
-    _passController.text = 'CreditSea@123';
+    if (_authController.phoneNumber.value.isNotEmpty) {
+      _phoneController.text = _authController.phoneNumber.value;
+    }
   }
 
   @override

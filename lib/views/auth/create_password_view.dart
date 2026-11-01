@@ -163,10 +163,16 @@ class _CreatePasswordViewState extends State<CreatePasswordView> {
                             : () {
                                 final p1 = _passController.text.trim();
                                 final p2 = _confirmPassController.text.trim();
-                                _authController.createPasswordAndProceed(
-                                  p1.isEmpty ? 'CreditSea@123' : p1,
-                                  p2.isEmpty ? 'CreditSea@123' : p2,
-                                );
+                                if (p1.isEmpty || p2.isEmpty) {
+                                  Get.snackbar(
+                                    'Password Required',
+                                    'Please enter and confirm your password',
+                                    backgroundColor: Colors.red.shade600,
+                                    colorText: Colors.white,
+                                  );
+                                  return;
+                                }
+                                _authController.createPasswordAndProceed(p1, p2);
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.buttonBlue,

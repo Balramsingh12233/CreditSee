@@ -167,10 +167,20 @@ class AuthController extends GetxController {
         return true;
       }
     } catch (e) {
-      // Fallback
       isLoading.value = false;
-      Get.toNamed(AppRoutes.createPassword);
-      return true;
+      // Real validation: OTP must match demo code 1234
+      if (otp == '1234') {
+        Get.toNamed(AppRoutes.createPassword);
+        return true;
+      } else {
+        Get.snackbar(
+          'Invalid OTP',
+          'Incorrect OTP entered. Demo OTP is 1234',
+          backgroundColor: Colors.red.shade600,
+          colorText: Colors.white,
+        );
+        return false;
+      }
     }
     isLoading.value = false;
     return false;
@@ -294,23 +304,22 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      // Allow instant test sign-in if error
-      final mockUser = UserModel(
-        phone: cleanPhone,
-        firstName: 'Rahul',
-        lastName: 'Sharma',
-        gender: 'Male',
-        dateOfBirth: '15-08-1995',
-        maritalStatus: 'Single',
-        creditScore: 785,
-      );
-      await StorageService.saveAuthToken('mock_token_123');
-      await StorageService.saveUser(mockUser);
-      currentUser.value = mockUser;
-      phoneNumber.value = cleanPhone;
-
-      Get.offAllNamed(AppRoutes.detailsLoading);
-      return true;
+      // Check stored user credentials if offline
+      final savedUser = StorageService.getUser();
+      if (savedUser != null && savedUser.phone == cleanPhone) {
+        currentUser.value = savedUser;
+        phoneNumber.value = cleanPhone;
+        Get.offAllNamed(AppRoutes.detailsLoading);
+        return true;
+      } else {
+        Get.snackbar(
+          'Sign In Failed',
+          'Invalid mobile number or password. Please verify your credentials.',
+          backgroundColor: Colors.red.shade600,
+          colorText: Colors.white,
+        );
+        return false;
+      }
     }
     isLoading.value = false;
     return false;

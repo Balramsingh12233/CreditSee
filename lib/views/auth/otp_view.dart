@@ -202,7 +202,16 @@ class _OtpViewState extends State<OtpView> {
                             ? null
                             : () {
                                 final otp = _getCombinedOtp();
-                                _authController.verifyOtp(otp.isEmpty ? '1234' : otp);
+                                if (otp.length < 4) {
+                                  Get.snackbar(
+                                    'Incomplete OTP',
+                                    'Please enter the 4-digit verification code',
+                                    backgroundColor: Colors.red.shade600,
+                                    colorText: Colors.white,
+                                  );
+                                  return;
+                                }
+                                _authController.verifyOtp(otp);
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.buttonBlue,
