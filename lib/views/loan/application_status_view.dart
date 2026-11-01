@@ -18,37 +18,13 @@ class ApplicationStatusView extends StatefulWidget {
 class _ApplicationStatusViewState extends State<ApplicationStatusView> {
   final LoanController _loanController = Get.find<LoanController>();
 
-  final List<Map<String, dynamic>> _steps = [
-    {
-      'step': 1,
-      'title': 'Application Submitted',
-      'icon': Icons.description_outlined,
-    },
-    {
-      'step': 2,
-      'title': 'Application under Review',
-      'icon': Icons.date_range_outlined,
-    },
-    {
-      'step': 3,
-      'title': 'E-KYC',
-      'icon': Icons.badge_outlined,
-    },
-    {
-      'step': 4,
-      'title': 'E-Nach',
-      'icon': Icons.account_balance_outlined,
-    },
-    {
-      'step': 5,
-      'title': 'E-Sign',
-      'icon': Icons.draw_outlined,
-    },
-    {
-      'step': 6,
-      'title': 'Disbursement',
-      'icon': Icons.payments_outlined,
-    },
+  final List<String> _stepTitles = [
+    'Application Submitted',
+    'Application under Review',
+    'E-KYC',
+    'E-Nach',
+    'E-Sign',
+    'Disbursement',
   ];
 
   @override
@@ -61,24 +37,15 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => DemoStatusSheet.show(context),
-        backgroundColor: AppColors.primaryBlue,
-        icon: const Icon(Icons.tune_rounded, color: Colors.white, size: 20),
-        label: Text(
-          'Demo Controls',
-          style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
-        ),
-      ),
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            // Top Stepper on light grey background (Figma design)
+            // ── Top Stepper on light grey background (Step 3: Approval) ──
             const StepperHeader(currentStep: 3),
             const SizedBox(height: 8),
 
-            // White Card with rounded top corners enclosing back arrow, title & status tracker
+            // ── White Card with rounded top corners (1:1 Figma wireframe) ──
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -87,11 +54,11 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
                   borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 ),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Back Arrow + Title (Inside Card)
+                      // Back Arrow + Title
                       Row(
                         children: [
                           GestureDetector(
@@ -105,108 +72,140 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
                               ),
                             ),
                           ),
-                          Text(
-                            'Application Status',
-                            style: GoogleFonts.outfit(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textDark,
+                          Expanded(
+                            child: GestureDetector(
+                              onLongPress: () => DemoStatusSheet.show(context),
+                              child: Text(
+                                'Application Status',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.textDark,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Subtle discrete icon to access demo status simulator
+                          GestureDetector(
+                            onTap: () => DemoStatusSheet.show(context),
+                            child: const Padding(
+                              padding: EdgeInsets.all(4.0),
+                              child: Icon(
+                                Icons.tune_rounded,
+                                size: 18,
+                                color: Color(0xFF94A3B8),
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
 
-            // Subtitle: Loan application no. #CS12323
-            Padding(
-              padding: const EdgeInsets.only(left: 36),
-              child: Obx(
-                () => Text(
-                  'Loan application no. ${_loanController.applicationId.value}',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: AppColors.textGrey,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Vertical Step Cards - Centered buttons matching Figma request
-            Obx(
-              () => Column(
-                children: _steps.map((s) {
-                  final stepNum = s['step'] as int;
-                  final title = s['title'] as String;
-                  final icon = s['icon'] as IconData;
-                  final activeStep = _loanController.currentStep.value;
-
-                  return _buildStepCard(
-                    stepNum: stepNum,
-                    title: title,
-                    icon: icon,
-                    activeStep: activeStep,
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Application Under Review Status Message Card (Screen 13 bottom)
-            Obx(
-              () => Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 56,
-                      height: 56,
-                      decoration: BoxDecoration(
-                        color: AppColors.calcCardBg,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Center(
-                        child: SvgPicture.asset(
-                          'assets/icons/in_review.svg',
-                          width: 34,
-                          height: 34,
+                      // Subtitle: Loan application no. #CS12323
+                      Padding(
+                        padding: const EdgeInsets.only(left: 36),
+                        child: Obx(
+                          () => RichText(
+                            text: TextSpan(
+                              text: 'Loan application no. ',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: AppColors.textGrey,
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: _loanController.applicationId.value.isNotEmpty
+                                      ? _loanController.applicationId.value
+                                      : '#CS12323',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textDark,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _loanController.currentStatus.value == 'Disbursed'
-                          ? 'Loan Disbursed 🎉'
-                          : (_loanController.currentStatus.value == 'Repaid'
-                              ? 'Loan Closed & Upgraded'
-                              : 'Application Under Review'),
-                      style: GoogleFonts.outfit(
-                        fontSize: 16.5,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textDark,
+                      const SizedBox(height: 22),
+
+                      // ── Connected Step Cards List (1:1 Figma Design) ──
+                      Obx(
+                        () {
+                          final activeStep = _loanController.currentStep.value;
+
+                          return Column(
+                            children: List.generate(_stepTitles.length, (index) {
+                              final stepNum = index + 1;
+                              final title = _stepTitles[index];
+
+                              final isDone = activeStep > stepNum;
+                              final isCurrent = activeStep == stepNum;
+
+                              Color connectorColor = const Color(0xFFCBD5E1);
+                              if (isDone) {
+                                connectorColor = const Color(0xFF00B074);
+                              } else if (isCurrent) {
+                                connectorColor = const Color(0xFF0075FF);
+                              }
+
+                              return Column(
+                                children: [
+                                  _buildStepCard(
+                                    stepNum: stepNum,
+                                    title: title,
+                                    activeStep: activeStep,
+                                  ),
+                                  if (index < _stepTitles.length - 1)
+                                    Center(
+                                      child: Container(
+                                        width: 1.5,
+                                        height: 10,
+                                        color: connectorColor,
+                                      ),
+                                    ),
+                                ],
+                              );
+                            }),
+                          );
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      _loanController.statusMessage.value,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
-                        fontSize: 12.5,
-                        color: AppColors.textGrey,
-                        height: 1.4,
+                      const SizedBox(height: 32),
+
+                      // ── Bottom Review Status Section (1:1 Figma Matching) ──
+                      Center(
+                        child: SvgPicture.asset(
+                          'assets/icons/in_review.svg',
+                          width: 60,
+                          height: 60,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: Text(
+                          'Application Under Review',
+                          style: GoogleFonts.outfit(
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textDark,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Text(
+                          "We're carefully reviewing your application to ensure\neverything is in order. Thank you for your patience.",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            color: AppColors.textGrey,
+                            height: 1.45,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),
@@ -215,7 +214,8 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
           ],
         ),
       ),
-      // Pinned Continue Button at screen bottom
+
+      // ── Pinned Continue Button at screen bottom ──
       bottomNavigationBar: Container(
         color: Colors.white,
         child: SafeArea(
@@ -228,6 +228,9 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.buttonBlue,
                 minimumSize: const Size.fromHeight(50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               child: Text(
                 'Continue',
@@ -243,67 +246,62 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
     );
   }
 
-  // Centered step button matching user requirement & Figma
+  // 1:1 Figma Step Card
+  // • White background for all states
+  // • Icon on far-left side (calendar icon)
+  // • Title perfectly centered
   Widget _buildStepCard({
     required int stepNum,
     required String title,
-    required IconData icon,
     required int activeStep,
   }) {
     final isDone = activeStep > stepNum;
     final isCurrent = activeStep == stepNum;
 
-    Color borderColor = AppColors.borderGrey;
-    Color textColor = AppColors.textGrey;
-    Color iconColor = AppColors.textLight;
-    Color bgColor = Colors.white;
+    Color borderColor = const Color(0xFF94A3B8); // Default grey border
+    Color textColor = const Color(0xFF64748B);   // Default grey text
+    Color iconColor = const Color(0xFF64748B);   // Default grey icon
 
     if (isDone) {
-      borderColor = AppColors.successGreen;
-      textColor = AppColors.successGreen;
-      iconColor = AppColors.successGreen;
-      bgColor = AppColors.successBg.withValues(alpha: 0.3);
+      borderColor = const Color(0xFF00B074);    // Green border
+      textColor = const Color(0xFF00B074);      // Green text
+      iconColor = const Color(0xFF00B074);      // Green icon
     } else if (isCurrent) {
-      borderColor = AppColors.buttonBlue;
-      textColor = AppColors.buttonBlue;
-      iconColor = AppColors.buttonBlue;
-      bgColor = AppColors.calcCardBg.withValues(alpha: 0.4);
+      borderColor = const Color(0xFF0075FF);    // Blue border
+      textColor = const Color(0xFF0075FF);      // Blue text
+      iconColor = const Color(0xFF0075FF);      // Blue icon
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      height: 50,
+      height: 48,
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: borderColor, width: isCurrent || isDone ? 1.5 : 1.0),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: borderColor,
+          width: isCurrent || isDone ? 1.6 : 1.2,
+        ),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // ONLY icon positioned on the far left side
+          // Icon strictly pinned to the far left edge
           Positioned(
-            left: 16,
-            child: stepNum == 2 && isCurrent
-                ? SvgPicture.asset(
-                    'assets/icons/in_review.svg',
-                    width: 20,
-                    height: 20,
-                  )
-                : Icon(
-                    isDone ? Icons.check_circle_outline_rounded : icon,
-                    color: iconColor,
-                    size: 20,
-                  ),
+            left: 14,
+            child: Icon(
+              isDone ? Icons.event_available_outlined : Icons.event_note_outlined,
+              color: iconColor,
+              size: 22,
+            ),
           ),
-          // Text exactly in center of the button
+          // Title strictly in the horizontal center of the button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 44),
             child: Text(
               title,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                fontSize: 14,
+                fontSize: 14.5,
                 fontWeight: isCurrent || isDone ? FontWeight.w600 : FontWeight.w500,
                 color: textColor,
               ),
