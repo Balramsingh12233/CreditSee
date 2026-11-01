@@ -67,8 +67,8 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
         child: Column(
           children: [
             const SizedBox(height: 12),
-            // Header Logo
-            const AppLogo(size: 38, isVertical: false),
+            // Header Logo — sized to match Figma onboarding header
+            const AppLogo(height: 52, width: 185, isVertical: false),
             const SizedBox(height: 16),
 
             // Carousel Slides
