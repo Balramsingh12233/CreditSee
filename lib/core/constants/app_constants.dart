@@ -5,18 +5,9 @@ class AppConstants {
   static const String appName = 'CreditSea';
   static const String appTagline = 'Instant, Flexible, Trusted Loans';
 
-  // Base API URL
+  // Base API URL (Live Render Deployed Backend)
   static String get defaultBaseUrl {
-    if (kIsWeb) {
-      return 'http://localhost:5000/api';
-    }
-    try {
-      if (Platform.isAndroid) {
-        // Android Emulator loops back to host via 10.0.2.2
-        return 'http://10.0.2.2:5000/api';
-      }
-    } catch (_) {}
-    return 'http://localhost:5000/api';
+    return 'https://creditsee.onrender.com/api';
   }
 
   // Storage Keys
