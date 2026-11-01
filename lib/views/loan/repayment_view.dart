@@ -25,7 +25,7 @@ class _RepaymentViewState extends State<RepaymentView> {
   int _selectedMethod = 0; // 0=UPI, 1=Card, 2=NetBanking, 3=Wallet
 
   // UPI form
-  final _upiController = TextEditingController(text: 'rahul@okicici');
+  final _upiController = TextEditingController();
   bool _upiValid = true;
 
   // Card form
@@ -544,13 +544,21 @@ class _RepaymentViewState extends State<RepaymentView> {
               prefixIcon: const Icon(Icons.alternate_email_rounded,
                   color: AppColors.textGrey, size: 18),
               errorText: _upiValid ? null : 'Invalid UPI ID',
-              suffixIcon: TextButton(
-                onPressed: () {},
-                child: Text('Verify',
-                    style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: const Color(0xFF0066FF),
-                        fontWeight: FontWeight.w600)),
+              suffixIcon: SizedBox(
+                width: 60,
+                child: TextButton(
+                  onPressed: () {},
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text('Verify',
+                      style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: const Color(0xFF0066FF),
+                          fontWeight: FontWeight.w600)),
+                ),
               ),
             ),
           ),

@@ -25,12 +25,9 @@ class _VerifyPanViewState extends State<VerifyPanView> {
     super.initState();
     final user = _authController.currentUser.value;
     final existingPan = user?.pan ?? _authController.panNumber.value;
-    if (existingPan.isNotEmpty) {
+    if (existingPan.isNotEmpty && existingPan != 'ABCDE1234F') {
       _panController.text = existingPan;
       _checkFormat(existingPan);
-    } else {
-      _panController.text = 'ABCDE1234F';
-      _checkFormat('ABCDE1234F');
     }
   }
 
@@ -48,10 +45,18 @@ class _VerifyPanViewState extends State<VerifyPanView> {
   }
 
   void _onVerify() {
-    final pan = _panController.text.trim();
-    _authController.verifyPan(
-      pan.isEmpty ? 'ABCDE1234F' : pan,
-    );
+    final pan = _panController.text.trim().toUpperCase();
+    final regex = RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]{1}$');
+    if (pan.isEmpty || !regex.hasMatch(pan)) {
+      Get.snackbar(
+        'Invalid PAN Number',
+        'Please enter a valid 10-character PAN (5 letters, 4 digits, 1 letter)',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+    _authController.verifyPan(pan);
   }
 
   @override

@@ -56,7 +56,7 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final headerHeight = (size.height * 0.44).clamp(320.0, 420.0);
+    final headerHeight = (size.height * 0.39).clamp(290.0, 360.0);
 
     return Container(
       width: double.infinity,
@@ -66,10 +66,10 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
         bottom: false,
         child: Column(
           children: [
-            const SizedBox(height: 12),
-            // Header Logo — sized to match Figma onboarding header
-            const AppLogo(height: 52, width: 185, isVertical: false),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
+            // Header Logo
+            const AppLogo(height: 44, width: 160, isVertical: false),
+            const SizedBox(height: 8),
 
             // Carousel Slides
             Expanded(
@@ -82,29 +82,31 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
                 itemBuilder: (context, index) {
                   final item = _slides[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildSlideIcon(item['type']),
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 10),
                         Text(
                           item['title'],
                           style: GoogleFonts.outfit(
-                            fontSize: 19,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           item['subtitle'],
                           style: GoogleFonts.inter(
-                            fontSize: 12.5,
-                            color: Colors.white.withValues(alpha: 0.8),
+                            fontSize: 12,
+                            color: Colors.white.withValues(alpha: 0.85),
                           ),
                           textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
@@ -115,7 +117,7 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
 
             // 3-dot Indicator
             Padding(
-              padding: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.only(bottom: 16, top: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
@@ -123,8 +125,8 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
                   (index) => AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     margin: const EdgeInsets.symmetric(horizontal: 3),
-                    width: _currentPage == index ? 22 : 7,
-                    height: 7,
+                    width: _currentPage == index ? 20 : 6,
+                    height: 6,
                     decoration: BoxDecoration(
                       color: _currentPage == index
                           ? Colors.white
@@ -143,10 +145,10 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
 
   Widget _buildSlideIcon(String type) {
     if (type == 'grid') {
-      // Slide 1: Flexible Loan Options — 4 free-floating rounded square tiles in space (no outer border/card)
+      // Slide 1: Flexible Loan Options — 4 free-floating rounded square tiles
       return SizedBox(
-        width: 140,
-        height: 140,
+        width: 110,
+        height: 110,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -154,16 +156,16 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildFreeTile(Icons.directions_car_rounded),
-                const SizedBox(width: 14),
+                const SizedBox(width: 10),
                 _buildFreeTile(Icons.two_wheeler_rounded),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildFreeTile(Icons.laptop_mac_rounded),
-                const SizedBox(width: 14),
+                const SizedBox(width: 10),
                 _buildFreeTile(Icons.smartphone_rounded),
               ],
             ),
@@ -171,19 +173,17 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
         ),
       );
     } else if (type == 'approval') {
-      // Slide 2: Instant Loan Approval — use the uploaded Figma SVG
       return SvgPicture.asset(
         'assets/icons/instant_loan.svg',
-        width: 140,
-        height: 140,
+        width: 110,
+        height: 110,
         fit: BoxFit.contain,
       );
     } else {
-      // Slide 3: 24x7 Customer Care — use the uploaded Figma SVG
       return SvgPicture.asset(
         'assets/icons/24_7_customer.svg',
-        width: 140,
-        height: 140,
+        width: 110,
+        height: 110,
         fit: BoxFit.contain,
       );
     }
@@ -191,14 +191,14 @@ class _AuthHeaderCarouselState extends State<AuthHeaderCarousel> {
 
   Widget _buildFreeTile(IconData icon) {
     return Container(
-      width: 58,
-      height: 58,
+      width: 48,
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
-        child: Icon(icon, color: Colors.white, size: 28),
+        child: Icon(icon, color: Colors.white, size: 24),
       ),
     );
   }

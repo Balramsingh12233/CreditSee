@@ -19,12 +19,15 @@ class HomeDashboardView extends StatefulWidget {
 class _HomeDashboardViewState extends State<HomeDashboardView> {
   final AuthController _authController = Get.find<AuthController>();
   final LoanController _loanController = Get.find<LoanController>();
-  final CreditScoreController _creditController = Get.put(CreditScoreController());
+  late final CreditScoreController _creditController;
 
   @override
   void initState() {
     super.initState();
+    // Use existing singleton from main.dart – avoids duplicate instance with stale/seeded data
+    _creditController = Get.find<CreditScoreController>();
     _loanController.refreshStatus();
+    _creditController.fetchScore();
   }
 
   @override

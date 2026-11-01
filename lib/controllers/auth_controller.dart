@@ -430,7 +430,19 @@ class AuthController extends GetxController {
           'phone': phoneNumber.value,
         },
       );
-    } catch (_) {}
+    } catch (_) {
+      // Offline fallback: accept demo OTP 123456 only
+      if (otp != '123456') {
+        isLoading.value = false;
+        Get.snackbar(
+          'Invalid OTP',
+          'Incorrect email OTP. Demo OTP: 123456',
+          backgroundColor: Colors.red.shade600,
+          colorText: Colors.white,
+        );
+        return false;
+      }
+    }
 
     final updated = (currentUser.value ?? UserModel(phone: phoneNumber.value)).copyWith(
       email: email.value,

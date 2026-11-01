@@ -65,15 +65,16 @@ class CreditScoreController extends GetxController {
       // Seed initial values from user profile
       _hasVerifiedPan.value = user.isPanVerified;
       _hasVerifiedEmail.value = user.isEmailVerified;
-      score.value = user.creditScore;
 
       // Simulate 6 months of account age for existing users
       _accountAgeMonths.value = 6;
-      _onTimeCount.value = 5;
+      _onTimeCount.value = 2;       // modest history → realistic score
       _totalLoanAmount.value = 30000;
-      _usedAmount.value = 10000;
+      _usedAmount.value = 15000;    // 50% utilization
       _inquiriesLast6Months.value = 1;
     }
+    // Always derive score from recalculation — never blindly load stored value
+    // This ensures score reflects real factors, not a stale/seeded cached number
     _recalculate();
   }
 

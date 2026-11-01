@@ -80,14 +80,64 @@ class _PersonalDetailsViewState extends State<PersonalDetailsView> {
     final first = _firstNameController.text.trim();
     final last = _lastNameController.text.trim();
     final dob = _dobController.text.trim();
-    final gender = _selectedGender ?? 'Male';
-    final marital = _selectedMaritalStatus ?? 'Single';
+    final gender = _selectedGender;
+    final marital = _selectedMaritalStatus;
+
+    if (first.isEmpty) {
+      Get.snackbar(
+        'Required Field',
+        'Please enter your First Name',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (last.isEmpty) {
+      Get.snackbar(
+        'Required Field',
+        'Please enter your Last Name',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (gender == null || gender.isEmpty) {
+      Get.snackbar(
+        'Required Field',
+        'Please select your Gender',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (dob.isEmpty) {
+      Get.snackbar(
+        'Required Field',
+        'Please select your Date of Birth',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (marital == null || marital.isEmpty) {
+      Get.snackbar(
+        'Required Field',
+        'Please select your Marital Status',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
     _authController.savePersonalDetails(
-      firstName: first.isEmpty ? 'Rahul' : first,
-      lastName: last.isEmpty ? 'Sharma' : last,
+      firstName: first,
+      lastName: last,
       gender: gender,
-      dob: dob.isEmpty ? '15 - 08 - 1995' : dob,
+      dob: dob,
       maritalStatus: marital,
     );
   }

@@ -27,10 +27,8 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
     super.initState();
     final user = _authController.currentUser.value;
     final existingEmail = user?.email ?? _authController.email.value;
-    if (existingEmail.isNotEmpty) {
+    if (existingEmail.isNotEmpty && !existingEmail.contains('example.com')) {
       _emailController.text = existingEmail;
-    } else {
-      _emailController.text = 'rahul.sharma@example.com';
     }
     _authController.startEmailCountdown();
   }
@@ -60,10 +58,30 @@ class _PersonalEmailViewState extends State<PersonalEmailView> {
   }
 
   void _onVerify() {
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !email.contains('@')) {
+      Get.snackbar(
+        'Invalid Email',
+        'Please enter a valid email address',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     final otp = _getEnteredOtp();
-    _authController.verifyEmailOtp(
-      otp.isEmpty ? '123456' : otp,
-    );
+    if (otp.length < 6) {
+      Get.snackbar(
+        'Incomplete OTP',
+        'Please enter the 6-digit email verification code (Demo: 123456)',
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    _authController.email.value = email;
+    _authController.verifyEmailOtp(otp);
   }
 
   @override
