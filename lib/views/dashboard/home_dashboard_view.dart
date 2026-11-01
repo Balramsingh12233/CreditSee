@@ -138,7 +138,7 @@ class _HomeDashboardViewState extends State<HomeDashboardView> {
                       title: 'Mock Repay',
                       subtitle: 'Boost score',
                       color: AppColors.successGreen,
-                      onTap: () => _loanController.performMockRepayment(),
+                      onTap: () => Get.toNamed(AppRoutes.repayment),
                     ),
                   ),
                 ],

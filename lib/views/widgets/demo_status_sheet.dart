@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/loan_controller.dart';
 import '../../core/theme/app_colors.dart';
+import '../../routes/app_routes.dart';
 
 class DemoStatusSheet {
   static void show(BuildContext context) {
@@ -84,10 +85,10 @@ class DemoStatusSheet {
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.pop(ctx);
-                  loanController.performMockRepayment();
+                  Get.toNamed(AppRoutes.repayment);
                 },
                 icon: const Icon(Icons.payment_rounded, color: Colors.white),
-                label: const Text('Test Mock Repayment (Bonus Points)'),
+                label: const Text('Open Razorpay / UPI Repayment Screen'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.successGreen,
                   minimumSize: const Size.fromHeight(46),

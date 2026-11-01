@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../core/network/api_client.dart';
+import '../core/services/notification_service.dart';
 import '../core/services/storage_service.dart';
 import '../data/models/loan_model.dart';
 import '../routes/app_routes.dart';
@@ -196,6 +197,13 @@ class LoanController extends GetxController {
       backgroundColor: Colors.blue.shade700,
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
+    );
+
+    // Trigger local push notification for loan update
+    NotificationService.showLoanStatusNotification(
+      step: step,
+      status: currentStatus.value,
+      applicationId: applicationId.value,
     );
   }
 

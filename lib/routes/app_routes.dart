@@ -11,6 +11,7 @@ import '../views/registration/verify_pan_view.dart';
 import '../views/loan/loan_calculator_view.dart';
 import '../views/loan/loan_offer_view.dart';
 import '../views/loan/application_status_view.dart';
+import '../views/loan/repayment_view.dart';
 import '../views/dashboard/home_dashboard_view.dart';
 
 class AppRoutes {
@@ -26,6 +27,7 @@ class AppRoutes {
   static const String loanCalculator = '/loan-calculator';
   static const String loanOffer = '/loan-offer';
   static const String applicationStatus = '/application-status';
+  static const String repayment = '/repayment';
   static const String homeDashboard = '/dashboard';
 
   static final List<GetPage> pages = [
@@ -87,6 +89,11 @@ class AppRoutes {
     GetPage(
       name: applicationStatus,
       page: () => const ApplicationStatusView(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: repayment,
+      page: () => const RepaymentView(),
       transition: Transition.rightToLeft,
     ),
     GetPage(

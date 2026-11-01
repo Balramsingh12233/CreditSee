@@ -221,25 +221,49 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-            child: ElevatedButton(
-              onPressed: () {
-                Get.offAllNamed(AppRoutes.homeDashboard);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.buttonBlue,
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            child: Obx(() {
+              final step = _loanController.currentStep.value;
+              if (step >= 6 && step < 7) {
+                return ElevatedButton(
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.repayment);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF00B074),
+                    minimumSize: const Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Pay EMI / Repay Loan',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                );
+              }
+              return ElevatedButton(
+                onPressed: () {
+                  Get.offAllNamed(AppRoutes.homeDashboard);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.buttonBlue,
+                  minimumSize: const Size.fromHeight(50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-              ),
-              child: Text(
-                'Continue',
-                style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                child: Text(
+                  'Continue',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
         ),
       ),

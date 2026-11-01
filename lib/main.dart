@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'controllers/auth_controller.dart';
+import 'controllers/credit_score_controller.dart';
 import 'controllers/loan_controller.dart';
+import 'core/services/notification_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'routes/app_routes.dart';
@@ -22,9 +24,13 @@ void main() async {
   // Initialize Persistent Local Storage
   await StorageService.init();
 
-  // Register Core GetX Controllers
+  // Initialize Push Notification Service
+  await NotificationService.init();
+
+  // Register Core GetX Controllers (permanent = survives page transitions)
   Get.put(AuthController(), permanent: true);
   Get.put(LoanController(), permanent: true);
+  Get.put(CreditScoreController(), permanent: true);
 
   runApp(const CreditSeaApp());
 }
