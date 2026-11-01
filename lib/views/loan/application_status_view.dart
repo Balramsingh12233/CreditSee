@@ -272,30 +272,36 @@ class _ApplicationStatusViewState extends State<ApplicationStatusView> {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      height: 50,
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: borderColor, width: isCurrent || isDone ? 1.5 : 1.0),
       ),
-      child: Row(
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          if (stepNum == 2 && isCurrent)
-            SvgPicture.asset(
-              'assets/icons/in_review.svg',
-              width: 20,
-              height: 20,
-            )
-          else
-            Icon(
-              isDone ? Icons.check_circle_outline_rounded : icon,
-              color: iconColor,
-              size: 20,
-            ),
-          const SizedBox(width: 14),
-          Expanded(
+          // ONLY icon positioned on the far left side
+          Positioned(
+            left: 16,
+            child: stepNum == 2 && isCurrent
+                ? SvgPicture.asset(
+                    'assets/icons/in_review.svg',
+                    width: 20,
+                    height: 20,
+                  )
+                : Icon(
+                    isDone ? Icons.check_circle_outline_rounded : icon,
+                    color: iconColor,
+                    size: 20,
+                  ),
+          ),
+          // Text exactly in center of the button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 44),
             child: Text(
               title,
+              textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: isCurrent || isDone ? FontWeight.w600 : FontWeight.w500,
