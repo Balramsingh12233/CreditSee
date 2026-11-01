@@ -8,6 +8,7 @@ import '../../controllers/credit_score_controller.dart';
 import '../../controllers/loan_controller.dart';
 import '../../core/services/notification_service.dart';
 import '../../core/theme/app_colors.dart';
+import '../../routes/app_routes.dart';
 
 /// Full mock Razorpay/UPI repayment screen.
 /// Shows EMI breakdown, selectable payment methods, real processing animation.
@@ -1205,18 +1206,22 @@ class _RepaymentViewState extends State<RepaymentView> {
 
             const SizedBox(height: 24),
 
-            ElevatedButton(
-              onPressed: () => Get.offAllNamed('/home-dashboard'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0066FF),
-                minimumSize: const Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-              child: Text('Back to Dashboard',
-                  style: GoogleFonts.inter(
-                      fontSize: 15, fontWeight: FontWeight.w600)),
-            ).animate().fadeIn(delay: 800.ms),
+            SafeArea(
+              top: false,
+              child: ElevatedButton(
+                onPressed: () => Get.offAllNamed(AppRoutes.homeDashboard),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0066FF),
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text('Back to Dashboard',
+                    style: GoogleFonts.inter(
+                        fontSize: 15, fontWeight: FontWeight.w600)),
+              ).animate().fadeIn(delay: 800.ms),
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
