@@ -9,6 +9,7 @@ import '../../controllers/loan_controller.dart';
 import '../../core/services/notification_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../routes/app_routes.dart';
+import '../dashboard/home_dashboard_view.dart';
 
 /// Full mock Razorpay/UPI repayment screen.
 /// Shows EMI breakdown, selectable payment methods, real processing animation.
@@ -179,29 +180,37 @@ class _RepaymentViewState extends State<RepaymentView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
-      appBar: AppBar(
-        backgroundColor: AppColors.primaryBlue,
-        foregroundColor: Colors.white,
-        title: Text(
-          'Loan Repayment',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+    return PopScope(
+      canPop: !_paymentSuccess && !_isProcessing,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && _paymentSuccess) {
+          Get.offAll(() => const HomeDashboardView());
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF1F5F9),
+        appBar: AppBar(
+          backgroundColor: AppColors.primaryBlue,
+          foregroundColor: Colors.white,
+          title: Text(
+            'Loan Repayment',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          elevation: 0,
+          leading: _paymentSuccess || _isProcessing
+              ? const SizedBox.shrink()
+              : IconButton(
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  onPressed: Get.back,
+                ),
         ),
-        centerTitle: true,
-        elevation: 0,
-        leading: _paymentSuccess || _isProcessing
-            ? const SizedBox.shrink()
-            : IconButton(
-                icon: const Icon(Icons.arrow_back_rounded),
-                onPressed: Get.back,
-              ),
+        body: _paymentSuccess
+            ? _buildSuccessScreen()
+            : _isProcessing
+                ? _buildProcessingScreen()
+                : _buildPaymentForm(),
       ),
-      body: _paymentSuccess
-          ? _buildSuccessScreen()
-          : _isProcessing
-              ? _buildProcessingScreen()
-              : _buildPaymentForm(),
     );
   }
 
@@ -1081,149 +1090,160 @@ class _RepaymentViewState extends State<RepaymentView> {
   // ─── SUCCESS SCREEN ────────────────────────────────────────────────────────────
 
   Widget _buildSuccessScreen() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Success icon
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: const Color(0xFF00B074).withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.check_circle_rounded,
-                color: Color(0xFF00B074),
-                size: 60,
-              ),
-            )
-                .animate()
-                .scale(
-                  begin: const Offset(0, 0),
-                  end: const Offset(1, 1),
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.elasticOut,
-                )
-                .fadeIn(),
-
-            const SizedBox(height: 24),
-
-            Text(
-              'Payment Successful!',
-              style: GoogleFonts.outfit(
-                fontSize: 26,
-                fontWeight: FontWeight.w900,
-                color: AppColors.textDark,
-              ),
-            ).animate().fadeIn(delay: 200.ms),
-
-            const SizedBox(height: 8),
-
-            Text(
-              '₹${_totalPayable.toStringAsFixed(0)} repaid',
-              style: GoogleFonts.outfit(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF00B074),
-              ),
-            ).animate().fadeIn(delay: 300.ms),
-
-            const SizedBox(height: 6),
-            Text(
-              'Transaction ID: TXN${DateTime.now().millisecondsSinceEpoch % 1000000}',
-              style: GoogleFonts.inter(fontSize: 11, color: AppColors.textGrey),
-            ).animate().fadeIn(delay: 400.ms),
-
-            const SizedBox(height: 24),
-
-            // Credit Score Boost Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0066FF), Color(0xFF00C48B)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    '🏆 Credit Score Updated!',
-                    style: GoogleFonts.outfit(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _scoreBox('$_oldCreditScore', 'Previous'),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Icon(Icons.arrow_forward_rounded,
-                            color: Colors.white, size: 22),
-                      ),
-                      _scoreBox('$_newCreditScore', 'New Score'),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '+$_scoreIncrease points from on-time repayment',
-                      style: GoogleFonts.inter(
-                          fontSize: 12,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ],
-              ),
-            )
-                .animate()
-                .fadeIn(delay: 500.ms)
-                .slideY(begin: 0.3, end: 0, delay: 500.ms),
-
-            const SizedBox(height: 24),
-
-            // What improved
-            _buildScoreFactors()
-                .animate()
-                .fadeIn(delay: 700.ms),
-
-            const SizedBox(height: 24),
-
-            SafeArea(
-              top: false,
-              child: ElevatedButton(
-                onPressed: () => Get.offAllNamed(AppRoutes.homeDashboard),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0066FF),
-                  minimumSize: const Size.fromHeight(52),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text('Back to Dashboard',
-                    style: GoogleFonts.inter(
-                        fontSize: 15, fontWeight: FontWeight.w600)),
-              ).animate().fadeIn(delay: 800.ms),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 12),
+          // Success icon
+          Container(
+            width: 84,
+            height: 84,
+            decoration: BoxDecoration(
+              color: const Color(0xFF00B074).withValues(alpha: 0.12),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
+            child: const Icon(
+              Icons.check_circle_rounded,
+              color: Color(0xFF00B074),
+              size: 54,
+            ),
+          )
+              .animate()
+              .scale(
+                begin: const Offset(0, 0),
+                end: const Offset(1, 1),
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.elasticOut,
+              )
+              .fadeIn(),
+
+          const SizedBox(height: 18),
+
+          Text(
+            'Payment Successful!',
+            style: GoogleFonts.outfit(
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textDark,
+            ),
+          ).animate().fadeIn(delay: 200.ms),
+
+          const SizedBox(height: 6),
+
+          Text(
+            '₹${_totalPayable.toStringAsFixed(0)} repaid',
+            style: GoogleFonts.outfit(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF00B074),
+            ),
+          ).animate().fadeIn(delay: 300.ms),
+
+          const SizedBox(height: 4),
+          Text(
+            'Transaction ID: TXN${DateTime.now().millisecondsSinceEpoch % 1000000}',
+            style: GoogleFonts.inter(fontSize: 11, color: AppColors.textGrey),
+          ).animate().fadeIn(delay: 400.ms),
+
+          const SizedBox(height: 20),
+
+          // Credit Score Boost Card
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0066FF), Color(0xFF00C48B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  '🏆 Credit Score Updated!',
+                  style: GoogleFonts.outfit(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _scoreBox('$_oldCreditScore', 'Previous'),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Icon(Icons.arrow_forward_rounded,
+                          color: Colors.white, size: 20),
+                    ),
+                    _scoreBox('$_newCreditScore', 'New Score'),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '+$_scoreIncrease points from on-time repayment',
+                    style: GoogleFonts.inter(
+                        fontSize: 11.5,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+          )
+              .animate()
+              .fadeIn(delay: 500.ms)
+              .slideY(begin: 0.3, end: 0, delay: 500.ms),
+
+          const SizedBox(height: 18),
+
+          // What improved
+          _buildScoreFactors()
+              .animate()
+              .fadeIn(delay: 600.ms),
+
+          const SizedBox(height: 26),
+
+          // Fully visible and tappable "Back to Dashboard" button
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () {
+                Get.offAll(() => const HomeDashboardView());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0066FF),
+                foregroundColor: Colors.white,
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                'Back to Dashboard',
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 36),
+        ],
       ),
     );
   }
